@@ -13,13 +13,13 @@
 
     body {
       font-family: 'Segoe UI', sans-serif;
-      color: #fff;
-      text-align: center;
       background: radial-gradient(circle at top, #ffccd5 0%, #ff99ac 100%);
       overflow: hidden;
       height: 100vh;
       position: relative;
       padding: 20px;
+      text-align: center;
+      color: #fff;
     }
 
     h1 {
@@ -52,9 +52,10 @@
       font-weight: 500;
       z-index: 2;
       position: relative;
+      transition: opacity 0.5s ease;
     }
 
-    #nextBtn {
+    #nextBtn, #playBtn {
       background-color: #ff3366;
       color: white;
       border: none;
@@ -69,7 +70,7 @@
       position: relative;
     }
 
-    #nextBtn:hover {
+    #nextBtn:hover, #playBtn:hover {
       transform: scale(1.05);
     }
 
@@ -117,15 +118,40 @@
         opacity: 0;
       }
     }
+
+    #videoContainer {
+      display: none;
+      margin-top: 20px;
+    }
+
+    iframe {
+      width: 90%;
+      max-width: 500px;
+      height: 280px;
+      border: 5px solid #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 0, 102, 0.5);
+    }
   </style>
 </head>
 <body>
 
   <h1>For My Love ❤️</h1>
-  <img id="imageBox" src="s.jpg" alt="Love Image">
+  <img id="imageBox" src="yourphoto.jpg" alt="Love Image">
   <div id="textBox">You are the most beautiful part of my life.</div>
   <button id="nextBtn" onclick="showNext()">Next Line ➡️</button>
+  <br>
+  <button id="playBtn" onclick="showVideo()">🎬 Play Me</button>
 
+  <div id="videoContainer">
+    <iframe width="853" height="480" src="https://www.youtube.com/embed/8MYdve75LWg" title="Dil Meri Na Sune | Atif Aslam | Himesh Reshammiya | Evergreen Love Song" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  </div>
+
+  <!-- Optional background music (remove if not needed) 
+  <audio autoplay loop hidden>
+    <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mp3">
+  </audio>
+	-->
   <script>
     const lines = [
       "You are the most beautiful part of my life.",
@@ -142,10 +168,20 @@
 
     function showNext() {
       index = (index + 1) % lines.length;
-      document.getElementById("textBox").textContent = lines[index];
+      const textBox = document.getElementById("textBox");
+      textBox.style.opacity = 0;
+      setTimeout(() => {
+        textBox.textContent = lines[index];
+        textBox.style.opacity = 1;
+      }, 300);
     }
 
-    // Create floating hearts on page load
+    function showVideo() {
+      document.getElementById("videoContainer").style.display = "block";
+      document.getElementById("playBtn").style.display = "none";
+    }
+
+    // Floating hearts
     for (let i = 0; i < 30; i++) {
       let heart = document.createElement('div');
       heart.className = 'heart';
