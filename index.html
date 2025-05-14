@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Love</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #fff;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e63946;
+        }
+        .content {
+            width: 90%;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #e63946;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+        h1 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        img {
+            border-radius: 10px;
+            width: 150px;
+            height: 150px;
+            margin-top: 20px;
+            object-fit: cover;
+        }
+        .swipe-text {
+            font-size: 18px;
+            color: #fff;
+            font-weight: bold;
+            padding: 5px;
+        }
+        .swipe-area {
+            width: 100%;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="content" id="content">
+    <h1>To My Dearest Love</h1>
+    <img src="ss.jpg" alt="My Photo">
+    <p class="swipe-text">Swipe to reveal my feelings</p>
+    <p id="message1">Every moment with you is a treasure I hold close to my heart.</p>
+    <p id="message2" style="display:none;">Your smile is the best part of my day, lighting up my world.</p>
+    <p id="message3" style="display:none;">Being with you feels like a beautiful dream that I never want to end.</p>
+    <p id="message4" style="display:none;">Your love makes everything in life feel brighter and better.</p>
+    <p id="message5" style="display:none;">You are my first thought in the morning and my last at night.</p>
+    <p id="message6" style="display:none;">I fall deeper in love with you every day, more than I ever thought possible.</p>
+    <p id="message7" style="display:none;">With you by my side, life feels like an endless adventure.</p>
+    <p id="message8" style="display:none;">Forever and always, I'll cherish you, my love.</p>
+    <div class="swipe-area" id="swipeArea">
+        <p>Swipe Right →</p>
+    </div>
+</div>
+
+<script>
+    let currentMessage = 1;
+
+    document.getElementById('swipeArea').addEventListener('click', function() {
+        if (currentMessage < 8) {
+            document.getElementById('message' + currentMessage).style.display = 'none';
+            currentMessage++;
+            document.getElementById('message' + currentMessage).style.display = 'block';
+        } else {
+            document.getElementById('swipeArea').style.display = 'none';  // Hide swipe when all messages are shown
+        }
+    });
+</script>
+
+</body>
+</html>
