@@ -5,50 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>For My Love ❤️</title>
   <style>
-    body {
-      background-color: #fff0f3;
-      font-family: 'Segoe UI', sans-serif;
+    * {
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
       text-align: center;
+      background: radial-gradient(circle at top, #ffccd5 0%, #ff99ac 100%);
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+      padding: 20px;
     }
 
     h1 {
-      color: #d90429;
-      margin-bottom: 30px;
+      margin-top: 20px;
+      font-size: 2em;
+      color: #fff0f5;
+      text-shadow: 1px 1px 3px #b00020;
     }
 
     #imageBox {
-      max-width: 300px;
-      width: 90%;
-      height: auto;
-      border-radius: 20px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-      transition: transform 0.5s ease;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid #fff;
+      margin: 20px auto;
+      box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
     }
 
     #textBox {
       font-size: 20px;
-      color: #d90429;
-      margin-bottom: 30px;
-      min-height: 50px;
-      padding: 0 20px;
+      padding: 10px 30px;
+      margin-top: 10px;
+      color: #fff8f9;
+      min-height: 60px;
+      font-weight: 500;
     }
 
     #nextBtn {
-      background-color: #d90429;
+      background-color: #ff3366;
       color: white;
       border: none;
       padding: 12px 25px;
       font-size: 16px;
       border-radius: 30px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      margin-top: 20px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(255, 51, 102, 0.5);
     }
 
     #nextBtn:hover {
       transform: scale(1.05);
+    }
+
+    /* Floating Hearts */
+    .heart {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      background: #ff3366;
+      transform: rotate(45deg);
+      animation: float 10s linear infinite;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      background: #ff3366;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(45deg);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) rotate(45deg);
+        opacity: 0;
+      }
     }
   </style>
 </head>
@@ -56,23 +114,36 @@
 
   <h1>For My Love ❤️</h1>
   <img id="imageBox" src="s.jpg" alt="Love Image">
-  <div id="textBox">You make my world brighter every day.</div>
-  <button id="nextBtn" onclick="showNext()">Swipe Right ➡️</button>
+  <div id="textBox">You are the most beautiful part of my life.</div>
+  <button id="nextBtn" onclick="showNext()">Next Line ➡️</button>
 
   <script>
-    const images = ["s.jpg", "ss.jpg", "sss.jpg"];
     const lines = [
-      "You make my world brighter every day.",
-      "Every moment with you feels like magic.",
-      "You're the reason behind my happiest smile."
+      "You are the most beautiful part of my life.",
+      "My heart found its home in you.",
+      "You're my today and all of my tomorrows.",
+      "Your smile is my favorite sunshine.",
+      "You complete my every heartbeat.",
+      "Being with you feels like a dream come true.",
+      "I fall in love with you more every day.",
+      "Forever is better with you."
     ];
 
     let index = 0;
 
     function showNext() {
-      index = (index + 1) % images.length;
-      document.getElementById("imageBox").src = images[index];
+      index = (index + 1) % lines.length;
       document.getElementById("textBox").textContent = lines[index];
+    }
+
+    // Create random floating hearts
+    for (let i = 0; i < 30; i++) {
+      let heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      heart.style.opacity = Math.random();
+      document.body.appendChild(heart);
     }
   </script>
 
