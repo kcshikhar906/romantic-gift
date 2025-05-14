@@ -3,111 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>For You, My Love ❤️</title>
+  <title>For My Love ❤️</title>
   <style>
     body {
       background-color: #fff0f3;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       text-align: center;
     }
 
     h1 {
-      color: #e63946;
-      margin-top: 30px;
+      color: #d90429;
+      margin-bottom: 30px;
     }
 
-    .image {
-      width: 80%;
-      max-width: 400px;
-      margin: 40px auto;
+    #imageBox {
+      max-width: 300px;
+      width: 90%;
+      height: auto;
       border-radius: 20px;
-      opacity: 0;
-      transform: scale(0.9);
-      transition: all 1s ease-in-out;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      transition: transform 0.5s ease;
     }
 
-    .visible {
-      opacity: 1;
-      transform: scale(1);
+    #textBox {
+      font-size: 20px;
+      color: #d90429;
+      margin-bottom: 30px;
+      min-height: 50px;
+      padding: 0 20px;
     }
 
-    .slide-up {
-      transform: translateY(30px);
-    }
-
-    .slide-up.visible {
-      transform: translateY(0);
-    }
-
-    #playBtn {
-      background-color: #e63946;
+    #nextBtn {
+      background-color: #d90429;
       color: white;
       border: none;
-      font-size: 20px;
-      padding: 15px 30px;
+      padding: 12px 25px;
+      font-size: 16px;
       border-radius: 30px;
       cursor: pointer;
-      margin-top: 30px;
-      transition: transform 0.3s ease;
+      transition: transform 0.2s ease;
     }
 
-    #playBtn:hover {
-      transform: scale(1.1);
-    }
-
-    #myVideo {
-      display: none;
-      margin-top: 20px;
-      width: 90%;
-      max-width: 500px;
-      border-radius: 20px;
+    #nextBtn:hover {
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
 
-  <h1>For You, My Love ❤️</h1>
-
-  <img src="s.jpg" class="image fade-in" id="s" />
-  <img src="ss.jpg" class="image zoom-in" id="ss" />
-  <img src="sss.jpg" class="image slide-up" id="sss" />
-
-  <button id="playBtn" onclick="showVideo()">PLAY ME ❤️</button>
-  <video id="myVideo" controls poster="heart.jpg">
-    <source src="vid.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <h1>For My Love ❤️</h1>
+  <img id="imageBox" src="img1.jpg" alt="Love Image">
+  <div id="textBox">You make my world brighter every day.</div>
+  <button id="nextBtn" onclick="showNext()">Swipe Right ➡️</button>
 
   <script>
-    // Animate on scroll
-    function isInViewport(el) {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top <= (window.innerHeight || document.documentElement.clientHeight)
-      );
-    }
+    const images = ["s.jpg", "ss.jpg", "sss.jpg"];
+    const lines = [
+      "You make my world brighter every day.",
+      "Every moment with you feels like magic.",
+      "You're the reason behind my happiest smile."
+    ];
 
-    function reveal() {
-      ['img1', 'img2', 'img3'].forEach(id => {
-        const el = document.getElementById(id);
-        if (isInViewport(el)) {
-          el.classList.add("visible");
-        }
-      });
-    }
+    let index = 0;
 
-    function showVideo() {
-      document.getElementById('myVideo').style.display = 'block';
-      document.getElementById('myVideo').play();
-      document.getElementById('playBtn').style.display = 'none';
+    function showNext() {
+      index = (index + 1) % images.length;
+      document.getElementById("imageBox").src = images[index];
+      document.getElementById("textBox").textContent = lines[index];
     }
-
-    document.addEventListener('scroll', reveal);
-    window.addEventListener('load', reveal);
   </script>
 
 </body>
 </html>
-
