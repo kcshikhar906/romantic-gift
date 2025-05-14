@@ -27,6 +27,8 @@
       font-size: 2em;
       color: #fff0f5;
       text-shadow: 1px 1px 3px #b00020;
+      z-index: 2;
+      position: relative;
     }
 
     #imageBox {
@@ -37,6 +39,8 @@
       border: 5px solid #fff;
       margin: 20px auto;
       box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+      z-index: 2;
+      position: relative;
     }
 
     #textBox {
@@ -46,6 +50,8 @@
       color: #fff8f9;
       min-height: 60px;
       font-weight: 500;
+      z-index: 2;
+      position: relative;
     }
 
     #nextBtn {
@@ -59,6 +65,8 @@
       margin-top: 20px;
       transition: all 0.2s ease;
       box-shadow: 0 4px 10px rgba(255, 51, 102, 0.5);
+      z-index: 2;
+      position: relative;
     }
 
     #nextBtn:hover {
@@ -72,7 +80,8 @@
       position: absolute;
       background: #ff3366;
       transform: rotate(45deg);
-      animation: float 10s linear infinite;
+      animation: float linear infinite;
+      z-index: 1;
     }
 
     .heart::before,
@@ -100,11 +109,11 @@
         transform: translateY(100vh) rotate(45deg);
         opacity: 0;
       }
-      50% {
+      10% {
         opacity: 1;
       }
       100% {
-        transform: translateY(-10vh) rotate(45deg);
+        transform: translateY(-20vh) rotate(45deg);
         opacity: 0;
       }
     }
@@ -136,12 +145,13 @@
       document.getElementById("textBox").textContent = lines[index];
     }
 
-    // Create random floating hearts
+    // Create floating hearts on page load
     for (let i = 0; i < 30; i++) {
       let heart = document.createElement('div');
       heart.className = 'heart';
       heart.style.left = Math.random() * 100 + 'vw';
       heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      heart.style.top = '100vh';
       heart.style.opacity = Math.random();
       document.body.appendChild(heart);
     }
