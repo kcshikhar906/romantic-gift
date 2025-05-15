@@ -3,194 +3,167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>For My Love ❤️</title>
+  <title>Scratch to Reveal My Heart 💌</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
+      margin: 0;
+      background: linear-gradient(to bottom right, #ffafbd, #ffc3a0);
       font-family: 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #ffccd5 0%, #ff99ac 100%);
-      overflow: hidden;
-      height: 100vh;
-      position: relative;
-      padding: 20px;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 30px 10px;
       color: #fff;
+      text-align: center;
     }
 
     h1 {
-      margin-top: 20px;
-      font-size: 2em;
-      color: #fff0f5;
-      text-shadow: 1px 1px 3px #b00020;
-      z-index: 2;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 4px #b00020;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .scratch-container {
+      width: 100px;
+      height: 100px;
       position: relative;
-    }
-
-    #imageBox {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 5px solid #fff;
-      margin: 20px auto;
-      box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
-      z-index: 2;
-      position: relative;
-    }
-
-    #textBox {
-      font-size: 20px;
-      padding: 10px 30px;
-      margin-top: 10px;
-      color: #fff8f9;
-      min-height: 60px;
-      font-weight: 500;
-      z-index: 2;
-      position: relative;
-      transition: opacity 0.5s ease;
-    }
-
-    #nextBtn, #playBtn {
-      background-color: #ff3366;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      font-size: 16px;
-      border-radius: 30px;
-      cursor: pointer;
-      margin-top: 20px;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 10px rgba(255, 51, 102, 0.5);
-      z-index: 2;
-      position: relative;
-    }
-
-    #nextBtn:hover, #playBtn:hover {
-      transform: scale(1.05);
-    }
-
-    /* Floating Hearts */
-    .heart {
-      width: 20px;
-      height: 20px;
-      position: absolute;
-      background: #ff3366;
-      transform: rotate(45deg);
-      animation: float linear infinite;
-      z-index: 1;
-    }
-
-    .heart::before,
-    .heart::after {
-      content: '';
-      width: 20px;
-      height: 20px;
-      background: #ff3366;
-      border-radius: 50%;
-      position: absolute;
-    }
-
-    .heart::before {
-      top: -10px;
-      left: 0;
-    }
-
-    .heart::after {
-      left: -10px;
-      top: 0;
-    }
-
-    @keyframes float {
-      0% {
-        transform: translateY(100vh) rotate(45deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-20vh) rotate(45deg);
-        opacity: 0;
-      }
-    }
-
-    #videoContainer {
-      display: none;
-      margin-top: 20px;
-    }
-
-    iframe {
-      width: 90%;
-      max-width: 500px;
-      height: 280px;
-      border: 5px solid #fff;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255, 0, 102, 0.5);
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      background-color: #fff;
+    }
+
+    .message {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      color: #ff3366;
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 0;
+    }
+
+    #finalMessage {
+      margin-top: 30px;
+      font-size: 22px;
+      display: none;
+      color: #fff8f9;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-  <h1>For My Love ❤️</h1>
-  <img id="imageBox" src="s.jpg" alt="Love Image">
-  <div id="textBox">You are the most beautiful part of my life.</div>
-  <button id="nextBtn" onclick="showNext()">Next Line ➡️</button>
-  <br>
-  <button id="playBtn" onclick="showVideo()">🎬 Play Me</button>
+  <h1>Scratch to Reveal My Heart 💕</h1>
+  <div class="grid" id="scratchGrid"></div>
 
-  <div id="videoContainer">
-    <iframe width="853" height="480" src="https://www.youtube.com/embed/8MYdve75LWg" title="Dil Meri Na Sune | Atif Aslam | Himesh Reshammiya | Evergreen Love Song" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-  </div>
+  <div id="finalMessage">You revealed all my love! 💖</div>
 
-  <!-- Optional background music (remove if not needed) 
-  <audio autoplay loop hidden>
-    <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mp3">
-  </audio>
-	-->
   <script>
-    const lines = [
-      "You are the most beautiful part of my life.",
-      "My heart found its home in you.",
-      "You're my today and all of my tomorrows.",
-      "Your smile is my favorite sunshine.",
-      "You complete my every heartbeat.",
-      "Being with you feels like a dream come true.",
-      "I fall in love with you more every day.",
-      "Forever is better with you."
+    const messages = [
+      "❤️", "I love you", "You're mine",
+      "😘", "My sunshine", "Forever 💍"
     ];
 
-    let index = 0;
+    let revealedCount = 0;
 
-    function showNext() {
-      index = (index + 1) % lines.length;
-      const textBox = document.getElementById("textBox");
-      textBox.style.opacity = 0;
-      setTimeout(() => {
-        textBox.textContent = lines[index];
-        textBox.style.opacity = 1;
+    function createScratchCard(msg, index) {
+      const container = document.createElement("div");
+      container.className = "scratch-container";
+
+      const messageDiv = document.createElement("div");
+      messageDiv.className = "message";
+      messageDiv.innerText = msg;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 100;
+      canvas.height = 100;
+      canvas.style.position = "absolute";
+      canvas.style.top = 0;
+      canvas.style.left = 0;
+      canvas.style.zIndex = 1;
+
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#999";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'destination-out';
+
+      let isDrawing = false;
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        if (e.touches) {
+          e = e.touches[0];
+        }
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
+      }
+
+      function scratch(e) {
+        if (!isDrawing) return;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 12, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      canvas.addEventListener("mousedown", () => isDrawing = true);
+      canvas.addEventListener("touchstart", () => isDrawing = true);
+      canvas.addEventListener("mouseup", () => isDrawing = false);
+      canvas.addEventListener("touchend", () => isDrawing = false);
+      canvas.addEventListener("mousemove", scratch);
+      canvas.addEventListener("touchmove", (e) => {
+        scratch(e);
+        e.preventDefault();
+      });
+
+      // Detect reveal percentage
+      const interval = setInterval(() => {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let transparentPixels = 0;
+        for (let i = 3; i < imageData.data.length; i += 4) {
+          if (imageData.data[i] < 128) transparentPixels++;
+        }
+        const percent = transparentPixels / (canvas.width * canvas.height) * 100;
+        if (percent > 50) {
+          canvas.remove();
+          clearInterval(interval);
+          revealedCount++;
+          if (revealedCount === messages.length) {
+            document.getElementById("finalMessage").style.display = "block";
+          }
+        }
       }, 300);
+
+      container.appendChild(messageDiv);
+      container.appendChild(canvas);
+
+      return container;
     }
 
-    function showVideo() {
-      document.getElementById("videoContainer").style.display = "block";
-      document.getElementById("playBtn").style.display = "none";
-    }
-
-    // Floating hearts
-    for (let i = 0; i < 30; i++) {
-      let heart = document.createElement('div');
-      heart.className = 'heart';
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
-      heart.style.top = '100vh';
-      heart.style.opacity = Math.random();
-      document.body.appendChild(heart);
-    }
+    const grid = document.getElementById("scratchGrid");
+    messages.forEach((msg, index) => {
+      grid.appendChild(createScratchCard(msg, index));
+    });
   </script>
 
 </body>
