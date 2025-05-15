@@ -3,259 +3,230 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Scratch to Reveal My Heart 💌</title>
+  <title>Romantic Scratch Memory Game</title>
   <style>
     body {
       margin: 0;
-      background: linear-gradient(to bottom right, #ffafbd, #ffc3a0);
+      background: linear-gradient(to bottom, #ff4b2b, #ff416c);
       font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding: 30px 10px;
-      color: #fff;
-      text-align: center;
+      overflow-x: hidden;
+      color: white;
     }
 
     h1 {
-      margin-bottom: 20px;
-      text-shadow: 1px 1px 4px #b00020;
+      text-align: center;
+      padding: 20px;
+      font-size: 2rem;
     }
 
-    .grid {
+    #game {
       display: grid;
-      grid-template-columns: repeat(3, 100px);
-      gap: 20px;
-      justify-content: center;
-      margin-top: 20px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    .scratch-container {
-      width: 100px;
-      height: 100px;
-      position: relative;
+    .card {
+      background: #fff;
+      color: #ff416c;
       border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      background-color: #fff;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
-    .message {
-      position: absolute;
+    .card.revealed {
+      background: #ffe6eb;
+    }
+
+    .card.matched {
+      background: #ff91a4;
+      color: white;
+      font-weight: bold;
+    }
+
+    .hidden-text {
+      visibility: hidden;
+    }
+
+    .card.revealed .hidden-text {
+      visibility: visible;
+    }
+
+    /* Floating hearts */
+    .heart {
+      position: fixed;
+      color: #fff;
+      animation: float 10s linear infinite;
+      font-size: 24px;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) translateX(30px);
+        opacity: 0;
+      }
+    }
+
+    /* Confetti */
+    canvas.confetti {
+      position: fixed;
+      pointer-events: none;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      background-color: #fff;
-      color: #ff3366;
-      font-size: 18px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 0;
+      z-index: 1000;
     }
 
-    #finalMessage {
-      margin-top: 30px;
-      font-size: 22px;
+    /* End message */
+    #message {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-top: 20px;
       display: none;
-      color: #fff8f9;
-      animation: fadeIn 2s ease-in-out;
-    }
-
-    #timer {
-      margin-top: 10px;
-      font-size: 16px;
-      color: #fff0f2;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    #lockscreen {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.9);
-      color: white;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-    }
-
-    input[type="password"] {
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-      width: 200px;
-    }
-
-    button {
-      padding: 10px 20px;
-      border: none;
-      background-color: #ff3366;
-      color: white;
-      font-size: 16px;
-      border-radius: 8px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
+  <h1>💕 Scratch & Match 💕</h1>
+  <div id="game"></div>
+  <div id="message">🎉 You Matched All Pairs! 🎉</div>
 
-  <div id="lockscreen">
-    <h2>Enter the secret code 💘</h2>
-    <input type="password" id="passInput" placeholder="e.g. 143" />
-    <button onclick="checkPass()">Unlock</button>
-    <p id="error" style="color: pink; margin-top: 10px;"></p>
-  </div>
-
-  <h1>Scratch to Reveal My Heart 💕</h1>
-  <div id="timer">⏱️ Time: 0s</div>
-  <div class="grid" id="scratchGrid"></div>
-  <div id="finalMessage">You revealed all my love! 💖</div>
+  <canvas class="confetti" id="confettiCanvas"></canvas>
 
   <script>
-    const messages = [
-      "❤️", "I love you", "You're mine",
-      "😘", "My sunshine", "Forever 💍"
+    const pairs = [
+      '❤️', '❤️',
+      'Kiss', 'Kiss',
+      '💋', '💋',
+      'Hug', 'Hug',
+      '😍', '😍',
+      'Love', 'Love',
+      '💖', '💖'
     ];
 
-    let revealedCount = 0;
-    let startTime, intervalTimer;
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let matched = 0;
 
-    function startClock() {
-      startTime = Date.now();
-      intervalTimer = setInterval(() => {
-        const seconds = Math.floor((Date.now() - startTime) / 1000);
-        document.getElementById("timer").textContent = `⏱️ Time: ${seconds}s`;
-      }, 1000);
-    }
-
-    function stopClock() {
-      clearInterval(intervalTimer);
-    }
-
-    function createScratchCard(msg, index) {
-      const container = document.createElement("div");
-      container.className = "scratch-container";
-
-      const messageDiv = document.createElement("div");
-      messageDiv.className = "message";
-      messageDiv.innerText = msg;
-
-      const canvas = document.createElement("canvas");
-      canvas.width = 100;
-      canvas.height = 100;
-      canvas.style.position = "absolute";
-      canvas.style.top = 0;
-      canvas.style.left = 0;
-      canvas.style.zIndex = 1;
-
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#999";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.globalCompositeOperation = 'destination-out';
-
-      let isDrawing = false;
-
-      function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        if (e.touches) e = e.touches[0];
-        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
       }
-
-      function scratch(e) {
-        if (!isDrawing) return;
-        const pos = getPos(e);
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 12, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      canvas.addEventListener("mousedown", () => isDrawing = true);
-      canvas.addEventListener("touchstart", () => isDrawing = true);
-      canvas.addEventListener("mouseup", () => isDrawing = false);
-      canvas.addEventListener("touchend", () => isDrawing = false);
-      canvas.addEventListener("mousemove", scratch);
-      canvas.addEventListener("touchmove", (e) => {
-        scratch(e);
-        e.preventDefault();
-      });
-
-      const interval = setInterval(() => {
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        let transparentPixels = 0;
-        for (let i = 3; i < imageData.data.length; i += 4) {
-          if (imageData.data[i] < 128) transparentPixels++;
-        }
-        const percent = transparentPixels / (canvas.width * canvas.height) * 100;
-        if (percent > 50) {
-          canvas.remove();
-          clearInterval(interval);
-          revealedCount++;
-          if (revealedCount === messages.length) {
-            document.getElementById("finalMessage").style.display = "block";
-            stopClock();
-            triggerConfetti();
-          }
-        }
-      }, 300);
-
-      container.appendChild(messageDiv);
-      container.appendChild(canvas);
-      return container;
+      return array;
     }
 
-    function initScratchCards() {
-      const grid = document.getElementById("scratchGrid");
-      messages.forEach((msg, index) => {
-        grid.appendChild(createScratchCard(msg, index));
-      });
+    function createCard(content) {
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.innerHTML = `<span class="hidden-text">${content}</span>`;
+      card.addEventListener('click', () => revealCard(card, content));
+      return card;
     }
 
-    function checkPass() {
-      const input = document.getElementById("passInput").value;
-      if (input === "143") {
-        document.getElementById("lockscreen").style.display = "none";
-        initScratchCards();
-        startClock();
+    function revealCard(card, content) {
+      if (lockBoard || card.classList.contains('revealed') || card.classList.contains('matched')) return;
+      card.classList.add('revealed');
+
+      if (!firstCard) {
+        firstCard = { card, content };
       } else {
-        document.getElementById("error").textContent = "Wrong code! Try again 💔";
-      }
-    }
-
-    // Confetti 🎉
-    function triggerConfetti() {
-      for (let i = 0; i < 100; i++) {
-        const confetti = document.createElement("div");
-        confetti.style.position = "fixed";
-        confetti.style.width = "6px";
-        confetti.style.height = "6px";
-        confetti.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
-        confetti.style.left = Math.random() * 100 + "vw";
-        confetti.style.top = "-10px";
-        confetti.style.opacity = 0.8;
-        confetti.style.zIndex = 9999;
-        confetti.style.borderRadius = "50%";
-        confetti.style.transition = `top 2s ease-out, left 2s ease-out`;
-        document.body.appendChild(confetti);
+        secondCard = { card, content };
+        lockBoard = true;
 
         setTimeout(() => {
-          confetti.style.top = "110vh";
-          confetti.style.left = (parseFloat(confetti.style.left) + (Math.random() * 50 - 25)) + "vw";
-        }, 10);
+          if (firstCard.content === secondCard.content) {
+            firstCard.card.classList.add('matched');
+            secondCard.card.classList.add('matched');
+            matched += 2;
 
-        setTimeout(() => confetti.remove(), 3000);
+            if (matched === pairs.length) {
+              document.getElementById('message').style.display = 'block';
+              startConfetti();
+            }
+          } else {
+            firstCard.card.classList.remove('revealed');
+            secondCard.card.classList.remove('revealed');
+          }
+
+          firstCard = null;
+          secondCard = null;
+          lockBoard = false;
+        }, 1000);
       }
     }
-  </script>
 
+    function initGame() {
+      const gameBoard = document.getElementById('game');
+      gameBoard.innerHTML = '';
+      shuffle(pairs).forEach(content => {
+        gameBoard.appendChild(createCard(content));
+      });
+    }
+
+    // Floating hearts
+    function spawnHearts() {
+      for (let i = 0; i < 20; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.style.left = `${Math.random() * 100}vw`;
+        heart.style.animationDelay = `${Math.random() * 5}s`;
+        heart.innerHTML = '❤️';
+        document.body.appendChild(heart);
+      }
+    }
+
+    // Confetti
+    function startConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const pieces = Array.from({ length: 150 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: 5 + Math.random() * 5,
+        dx: Math.random() * 2 - 1,
+        dy: Math.random() * 3 + 1,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`
+      }));
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let p of pieces) {
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+          p.y += p.dy;
+          p.x += p.dx;
+          if (p.y > canvas.height) p.y = 0;
+          if (p.x > canvas.width) p.x = 0;
+        }
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    }
+
+    initGame();
+    spawnHearts();
+  </script>
 </body>
 </html>
