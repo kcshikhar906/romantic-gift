@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spin the Love Wheel</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to bottom right, #ff4e50, #f9d423);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      overflow: hidden;
+    }
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') no-repeat center center;
+      background-size: cover;
+      animation: float 10s linear infinite;
+      opacity: 0.6;
+    }
+    @keyframes float {
+      0% {transform: translateY(100vh) translateX(0);}
+      100% {transform: translateY(-10vh) translateX(50px);}
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .wheel-container {
+      position: relative;
+      width: 90vmin;
+      height: 90vmin;
+    }
+    #wheelCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: rotate(0deg);
+      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+      border-radius: 50%;
+    }
+    .arrow {
+      position: absolute;
+      top: 313px;
+      left: 56%;
+      transform: translateX(-50%);
+	  rotate: 90deg;
+      width: 0; 
+      height: 0; 
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 30px solid #fff;
+      z-index: 10;
+    }
+    .spin-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      color: #e91e63;
+      font-size: 1.5em;
+      border: none;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      z-index: 5;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .home-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      color: red;
+      border: none;
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      display: none;
+    }
+    .popup-content {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      font-size: 24px;
+      text-align: center;
+      color: #e91e63;
+      animation: zoomIn 0.5s ease;
+    }
+    @keyframes zoomIn {
+      0% {transform: scale(0.5); opacity: 0;}
+      100% {transform: scale(1); opacity: 1;}
+    }
+  </style>
+</head>
+<body>
+  <button class="home-button" onclick="window.location.href='index.html'">Home</button>
+  <div class="container">
+    <div class="wheel-container">
+      <div class="arrow"></div>
+      <canvas id="wheelCanvas" width="600" height="600"></canvas>
+      <button class="spin-btn" onclick="spinWheel()">SPIN</button>
+    </div>
+  </div>
+
+  <div class="popup" id="popup">
+    <div class="popup-content" id="popupText"></div>
+  </div>
+
+  <script>
+    const prompts = [
+      "Hug me 🤗", "Send a voice note 💌", "Plan our next date 📅", "Kiss 💋",
+      "Share a memory 📸", "Love message 💕", "Compliment me 😊", "Hold my hand 🫶",
+      "Send a photo 🥰", "Surprise me 🎁", "Write me a poem ✍️", "Sing for me 🎶",
+      "Draw us 🖼️", "Recreate our first date 🍝", "Cuddle time 🧸"
+    ];
+
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const radius = canvas.width / 2;
+    const numSegments = prompts.length;
+    const anglePerSegment = (2 * Math.PI) / numSegments;
+
+    function drawWheel() {
+      for (let i = 0; i < numSegments; i++) {
+        const startAngle = i * anglePerSegment;
+        const endAngle = startAngle + anglePerSegment;
+
+        ctx.beginPath();
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius - 10, startAngle, endAngle);
+        ctx.fillStyle = i % 2 === 0 ? '#ff9a9e' : '#fad0c4';
+        ctx.fill();
+        ctx.save();
+        ctx.translate(radius, radius);
+        ctx.rotate(startAngle + anglePerSegment / 2);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#000';
+        ctx.font = '16px Comic Sans MS';
+        ctx.fillText(prompts[i], radius - 20, 10);
+        ctx.restore();
+      }
+    }
+
+    drawWheel();
+
+    let angle = 0;
+    function spinWheel() {
+      const audio = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
+      audio.play();
+
+      const randomIndex = Math.floor(Math.random() * prompts.length);
+      const degPerSegment = 360 / prompts.length;
+      const stopAngle = 360 * 5 + (360 - (randomIndex * degPerSegment + degPerSegment / 2));
+
+      angle = stopAngle;
+      canvas.style.transform = `rotate(${angle}deg)`;
+
+      setTimeout(() => {
+        const popup = document.getElementById('popup');
+        const popupText = document.getElementById('popupText');
+        popupText.innerText = prompts[randomIndex];
+        popup.style.display = 'flex';
+        setTimeout(() => popup.onclick = () => popup.style.display = 'none', 100);
+      }, 4200);
+    }
+
+    // Floating hearts
+    for (let i = 0; i < 30; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      document.body.appendChild(heart);
+    }
+  </script>
+</body>
+</html>
