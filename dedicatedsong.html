@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Song Dedication Wheel</title>
+<style>
+  body {
+    margin: 0;
+    background: linear-gradient(to bottom right, #ff4e50, #f9d423);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    color: #e91e63;
+  }
+  .home-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: white;
+    color: #e91e63;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 100;
+  }
+  .container {
+    margin-top: 60px;
+    position: relative;
+    width: 90vmin;
+    height: 90vmin;
+    max-width: 450px;
+    max-height: 450px;
+  }
+  canvas#wheelCanvas {
+    border-radius: 50%;
+    width: 100% !important;
+    height: 100% !important;
+    transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .arrow {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-bottom: 40px solid white;
+    z-index: 10;
+  }
+  button.spin-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    color: #e91e63;
+    font-size: 1.6em;
+    border: none;
+    border-radius: 50%;
+    width: 110px;
+    height: 110px;
+    z-index: 5;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  #popup {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 101;
+    display: none;
+  }
+  #popup .popup-content {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    font-size: 24px;
+    text-align: center;
+    color: #e91e63;
+    animation: zoomIn 0.5s ease;
+    max-width: 90vw;
+  }
+  @keyframes zoomIn {
+    0% {transform: scale(0.5); opacity: 0;}
+    100% {transform: scale(1); opacity: 1;}
+  }
+  #player {
+    margin-top: 20px;
+    width: 90vw;
+    max-width: 450px;
+    height: 250px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  }
+</style>
+</head>
+<body>
+
+<button class="home-button" onclick="window.location.href='index.html'">Home</button>
+
+<div class="container">
+  <div class="arrow"></div>
+  <canvas id="wheelCanvas" width="450" height="450"></canvas>
+  <button class="spin-btn" onclick="spinWheel()">SPIN</button>
+</div>
+
+<div id="popup">
+  <div class="popup-content" id="popupText"></div>
+</div>
+
+<!-- YouTube Iframe Player -->
+<iframe id="player" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+<script>
+  const songs = [
+    { title: "Perfect - Ed Sheeran", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs"},
+    { title: "All of Me - John Legend", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs"},
+    { title: "Can't Help Falling in Love - Elvis Presley", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "You Are The Reason - Calum Scott", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "A Thousand Years - Christina Perri", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "Thinking Out Loud - Ed Sheeran", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "I Won't Give Up - Jason Mraz", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "Say You Won't Let Go - James Arthur", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "Just The Way You Are - Bruno Mars", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "My Heart Will Go On - Celine Dion", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "Make You Feel My Love - Adele", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "Kiss Me - Sixpence None The Richer", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "Marry Me - Train", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "How Long Will I Love You - Ellie Goulding", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
+    { title: "Can't Take My Eyes Off You - Frankie Valli", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" }
+  ];
+
+  const canvas = document.getElementById('wheelCanvas');
+  const ctx = canvas.getContext('2d');
+  const radius = canvas.width / 2;
+  const numSegments = songs.length;
+  const anglePerSegment = (2 * Math.PI) / numSegments;
+
+  function drawWheel() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < numSegments; i++) {
+      const startAngle = i * anglePerSegment;
+      const endAngle = startAngle + anglePerSegment;
+
+      ctx.beginPath();
+      ctx.moveTo(radius, radius);
+      ctx.arc(radius, radius, radius - 10, startAngle, endAngle);
+      ctx.fillStyle = i % 2 === 0 ? '#ff9a9e' : '#fad0c4';
+      ctx.fill();
+      ctx.save();
+      ctx.translate(radius, radius);
+      ctx.rotate(startAngle + anglePerSegment / 2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#000';
+      ctx.font = '14px Comic Sans MS';
+      wrapText(ctx, songs[i].title, radius - 20, 5, 100, 18);
+      ctx.restore();
+    }
+  }
+
+  // Wrap text in canvas
+  function wrapText(context, text, x, y, maxWidth, lineHeight) {
+    const words = text.split(' ');
+    let line = '';
+    let lines = [];
+    for(let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + ' ';
+      const metrics = context.measureText(testLine);
+      if(metrics.width > maxWidth && n > 0) {
+        lines.push(line);
+        line = words[n] + ' ';
+      } else {
+        line = testLine;
+      }
+    }
+    lines.push(line);
+    for
+      (let i = 0; i < lines.length; i++) {
+context.fillText(lines[i], x, y + (i * lineHeight));
+}
+}
+
+drawWheel();
+
+let rotation = 0;
+let spinning = false;
+
+function spinWheel() {
+if(spinning) return;
+spinning = true;
+  // Random spin degrees between 3000 and 6000 for cool effect
+const spinDegrees = Math.floor(Math.random() * 3000) + 3000;
+
+const totalRotation = rotation + spinDegrees;
+
+// Animate rotation using CSS transform
+canvas.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
+canvas.style.transform = `rotate(${totalRotation}deg)`;
+
+// After animation ends, determine the winning segment
+setTimeout(() => {
+  rotation = totalRotation % 360;
+  canvas.style.transition = 'none';
+  canvas.style.transform = `rotate(${rotation}deg)`;
+
+  // Calculate selected index
+  const degreesPerSegment = 360 / numSegments;
+  // Arrow points at 0deg, so selected segment is based on (360 - rotation)
+  const selectedIndex = Math.floor(((360 - rotation + degreesPerSegment / 2) % 360) / degreesPerSegment);
+
+  const selectedSong = songs[selectedIndex];
+  showPopup(`🎵 Now playing:<br><b>${selectedSong.title}</b>`);
+  loadVideo(selectedSong.url);
+
+  spinning = false;
+}, 4000);
+  }
+
+function showPopup(message) {
+const popup = document.getElementById('popup');
+const popupText = document.getElementById('popupText');
+popupText.innerHTML = message;
+popup.style.display = 'flex';
+}
+
+document.getElementById('popup').addEventListener('click', () => {
+document.getElementById('popup').style.display = 'none';
+});
+
+function loadVideo(url) {
+const player = document.getElementById('player');
+player.src = url;
+}
+</script>
+
+</body> </html>
+
