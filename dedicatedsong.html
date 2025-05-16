@@ -1,249 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Song Dedication Wheel</title>
-<style>
-  body {
-    margin: 0;
-    background: linear-gradient(to bottom right, #ff4e50, #f9d423);
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100vh;
-    color: #e91e63;
-  }
-  .home-button {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    background: white;
-    color: #e91e63;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    z-index: 100;
-  }
-  .container {
-    margin-top: 60px;
-    position: relative;
-    width: 90vmin;
-    height: 90vmin;
-    max-width: 450px;
-    max-height: 450px;
-  }
-  canvas#wheelCanvas {
-    border-radius: 50%;
-    width: 100% !important;
-    height: 100% !important;
-    transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-  }
-  .arrow {
-    position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 25px solid transparent;
-    border-right: 25px solid transparent;
-    border-bottom: 40px solid white;
-    z-index: 10;
-  }
-  button.spin-btn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    color: #e91e63;
-    font-size: 1.6em;
-    border: none;
-    border-radius: 50%;
-    width: 110px;
-    height: 110px;
-    z-index: 5;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  }
-  #popup {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 101;
-    display: none;
-  }
-  #popup .popup-content {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    font-size: 24px;
-    text-align: center;
-    color: #e91e63;
-    animation: zoomIn 0.5s ease;
-    max-width: 90vw;
-  }
-  @keyframes zoomIn {
-    0% {transform: scale(0.5); opacity: 0;}
-    100% {transform: scale(1); opacity: 1;}
-  }
-  #player {
-    margin-top: 20px;
-    width: 90vw;
-    max-width: 450px;
-    height: 250px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Spin the Wheel - Romantic Song Picker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffeef0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #c0392b;
+    }
+
+    canvas {
+      border: 5px solid #c0392b;
+      border-radius: 50%;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background: #c0392b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #e74c3c;
+    }
+
+    #popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    #popupText {
+      background: white;
+      padding: 30px;
+      font-size: 22px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    iframe {
+      margin-top: 20px;
+      border: 4px solid #c0392b;
+      border-radius: 12px;
+    }
+  </style>
 </head>
 <body>
 
-<button class="home-button" onclick="window.location.href='index.html'">Home</button>
+<h1>🎵 Spin the Romantic Song Wheel 🎵</h1>
 
-<div class="container">
-  <div class="arrow"></div>
-  <canvas id="wheelCanvas" width="450" height="450"></canvas>
-  <button class="spin-btn" onclick="spinWheel()">SPIN</button>
-</div>
+<canvas id="wheel" width="400" height="400"></canvas>
+<button onclick="spinWheel()">SPIN</button>
 
 <div id="popup">
-  <div class="popup-content" id="popupText"></div>
+  <div id="popupText">You got a song!</div>
 </div>
 
-<!-- YouTube Iframe Player -->
-<iframe id="player" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<iframe id="player" width="360" height="215" allow="autoplay" allowfullscreen></iframe>
 
 <script>
   const songs = [
-    { title: "Perfect - Ed Sheeran", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs"},
-    { title: "All of Me - John Legend", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs"},
-    { title: "Can't Help Falling in Love - Elvis Presley", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "You Are The Reason - Calum Scott", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "A Thousand Years - Christina Perri", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "Thinking Out Loud - Ed Sheeran", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "I Won't Give Up - Jason Mraz", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "Say You Won't Let Go - James Arthur", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "Just The Way You Are - Bruno Mars", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "My Heart Will Go On - Celine Dion", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "Make You Feel My Love - Adele", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "Kiss Me - Sixpence None The Richer", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "Marry Me - Train", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "How Long Will I Love You - Ellie Goulding", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" },
-    { title: "Can't Take My Eyes Off You - Frankie Valli", url: "https://www.youtube.com/watch?v=aRa1LdjgWbs" }
+    { title: "Romantic Vibes - Picked for You 💖", url: "https://www.youtube.com/embed/aRa1LdjgWbs?autoplay=1" },
+    { title: "Romantic Vibes - Picked for You 💖", url: "https://www.youtube.com/embed/aRa1LdjgWbs?autoplay=1" },
+    { title: "Romantic Vibes - Picked for You 💖", url: "https://www.youtube.com/embed/aRa1LdjgWbs?autoplay=1" },
+    { title: "Romantic Vibes - Picked for You 💖", url: "https://www.youtube.com/embed/aRa1LdjgWbs?autoplay=1" },
+    { title: "Romantic Vibes - Picked for You 💖", url: "https://www.youtube.com/embed/aRa1LdjgWbs?autoplay=1" },
+    { title: "Romantic Vibes - Picked for You 💖", url: "https://www.youtube.com/embed/aRa1LdjgWbs?autoplay=1" },
   ];
 
-  const canvas = document.getElementById('wheelCanvas');
+  const canvas = document.getElementById('wheel');
   const ctx = canvas.getContext('2d');
-  const radius = canvas.width / 2;
   const numSegments = songs.length;
-  const anglePerSegment = (2 * Math.PI) / numSegments;
+  const angle = 2 * Math.PI / numSegments;
 
   function drawWheel() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < numSegments; i++) {
-      const startAngle = i * anglePerSegment;
-      const endAngle = startAngle + anglePerSegment;
+      const startAngle = i * angle;
+      const endAngle = startAngle + angle;
 
       ctx.beginPath();
-      ctx.moveTo(radius, radius);
-      ctx.arc(radius, radius, radius - 10, startAngle, endAngle);
-      ctx.fillStyle = i % 2 === 0 ? '#ff9a9e' : '#fad0c4';
+      ctx.moveTo(200, 200);
+      ctx.arc(200, 200, 200, startAngle, endAngle);
+      ctx.fillStyle = i % 2 === 0 ? '#f8c6d8' : '#f9e0e4';
       ctx.fill();
+
       ctx.save();
-      ctx.translate(radius, radius);
-      ctx.rotate(startAngle + anglePerSegment / 2);
-      ctx.textAlign = 'right';
-      ctx.fillStyle = '#000';
-      ctx.font = '14px Comic Sans MS';
-      wrapText(ctx, songs[i].title, radius - 20, 5, 100, 18);
+      ctx.translate(200, 200);
+      ctx.rotate(startAngle + angle / 2);
+      ctx.fillStyle = '#8e44ad';
+      ctx.font = "bold 16px Arial";
+      ctx.textAlign = "right";
+      ctx.fillText(songs[i].title, 180, 10);
       ctx.restore();
     }
+
+    // Draw center circle
+    ctx.beginPath();
+    ctx.arc(200, 200, 40, 0, 2 * Math.PI);
+    ctx.fillStyle = "#c0392b";
+    ctx.fill();
+
+    ctx.fillStyle = "white";
+    ctx.font = "bold 18px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("SPIN", 200, 205);
   }
 
-  // Wrap text in canvas
-  function wrapText(context, text, x, y, maxWidth, lineHeight) {
-    const words = text.split(' ');
-    let line = '';
-    let lines = [];
-    for(let n = 0; n < words.length; n++) {
-      const testLine = line + words[n] + ' ';
-      const metrics = context.measureText(testLine);
-      if(metrics.width > maxWidth && n > 0) {
-        lines.push(line);
-        line = words[n] + ' ';
-      } else {
-        line = testLine;
-      }
-    }
-    lines.push(line);
-    for
-      (let i = 0; i < lines.length; i++) {
-context.fillText(lines[i], x, y + (i * lineHeight));
-}
-}
+  drawWheel();
 
-drawWheel();
+  let rotation = 0;
+  let spinning = false;
 
-let rotation = 0;
-let spinning = false;
+  function spinWheel() {
+    if (spinning) return;
+    spinning = true;
 
-function spinWheel() {
-if(spinning) return;
-spinning = true;
-  // Random spin degrees between 3000 and 6000 for cool effect
-const spinDegrees = Math.floor(Math.random() * 3000) + 3000;
+    const spinDegrees = Math.floor(Math.random() * 3000) + 3000;
+    const totalRotation = rotation + spinDegrees;
 
-const totalRotation = rotation + spinDegrees;
+    canvas.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
+    canvas.style.transform = `rotate(${totalRotation}deg)`;
 
-// Animate rotation using CSS transform
-canvas.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
-canvas.style.transform = `rotate(${totalRotation}deg)`;
+    setTimeout(() => {
+      rotation = totalRotation % 360;
+      canvas.style.transition = 'none';
+      canvas.style.transform = `rotate(${rotation}deg)`;
 
-// After animation ends, determine the winning segment
-setTimeout(() => {
-  rotation = totalRotation % 360;
-  canvas.style.transition = 'none';
-  canvas.style.transform = `rotate(${rotation}deg)`;
+      const degreesPerSegment = 360 / numSegments;
+      const selectedIndex = Math.floor(((360 - rotation + degreesPerSegment / 2) % 360) / degreesPerSegment);
+      const selectedSong = songs[selectedIndex];
 
-  // Calculate selected index
-  const degreesPerSegment = 360 / numSegments;
-  // Arrow points at 0deg, so selected segment is based on (360 - rotation)
-  const selectedIndex = Math.floor(((360 - rotation + degreesPerSegment / 2) % 360) / degreesPerSegment);
-
-  const selectedSong = songs[selectedIndex];
-  showPopup(`🎵 Now playing:<br><b>${selectedSong.title}</b>`);
-  loadVideo(selectedSong.url);
-
-  spinning = false;
-}, 4000);
+      showPopup(`🎵 Now playing:<br><b>${selectedSong.title}</b>`);
+      loadVideo(selectedSong.url);
+      spinning = false;
+    }, 4000);
   }
 
-function showPopup(message) {
-const popup = document.getElementById('popup');
-const popupText = document.getElementById('popupText');
-popupText.innerHTML = message;
-popup.style.display = 'flex';
-}
+  function showPopup(message) {
+    const popup = document.getElementById('popup');
+    const popupText = document.getElementById('popupText');
+    popupText.innerHTML = message;
+    popup.style.display = 'flex';
+  }
 
-document.getElementById('popup').addEventListener('click', () => {
-document.getElementById('popup').style.display = 'none';
-});
+  document.getElementById('popup').addEventListener('click', () => {
+    document.getElementById('popup').style.display = 'none';
+  });
 
-function loadVideo(url) {
-const player = document.getElementById('player');
-player.src = url;
-}
+  function loadVideo(url) {
+    const player = document.getElementById('player');
+    player.src = url;
+  }
 </script>
 
-</body> </html>
-
+</body>
+</html>
