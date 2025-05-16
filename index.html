@@ -3,230 +3,171 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Romantic Scratch Memory Game</title>
+  <title>Welcome My Love 💕</title>
   <style>
     body {
       margin: 0;
-      background: linear-gradient(to bottom, #ff4b2b, #ff416c);
       font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
+      background: linear-gradient(to bottom right, #ff5f6d, #ffc371);
       color: white;
-    }
-
-    h1 {
       text-align: center;
-      padding: 20px;
-      font-size: 2rem;
     }
 
-    #game {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      padding: 20px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .card {
-      background: #fff;
-      color: #ff416c;
-      border-radius: 10px;
-      height: 100px;
+    #lockscreen {
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-      font-size: 1.5rem;
-      position: relative;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    #main-content {
+      display: none;
+    }
+
+    input[type="password"] {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: #ff5f6d;
       cursor: pointer;
-      user-select: none;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
-    .card.revealed {
-      background: #ffe6eb;
+    nav {
+      background-color: rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+      flex-wrap: wrap;
     }
 
-    .card.matched {
-      background: #ff91a4;
+    nav a {
       color: white;
+      text-decoration: none;
       font-weight: bold;
+      padding: 8px 15px;
+      border-radius: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      transition: background-color 0.3s ease;
     }
 
-    .hidden-text {
-      visibility: hidden;
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.4);
     }
 
-    .card.revealed .hidden-text {
-      visibility: visible;
+    h1.typewriter {
+      font-size: 2.5rem;
+      margin-top: 30px;
+      border-right: 2px solid #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      animation: typing 3s steps(40, end), blink 0.75s step-end infinite;
+      width: 0;
     }
 
-    /* Floating hearts */
-    .heart {
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent }
+    }
+
+    p {
+      font-size: 1.2rem;
+    }
+
+    .hearts {
       position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .hearts span {
+      position: absolute;
       color: #fff;
       animation: float 10s linear infinite;
-      font-size: 24px;
+      font-size: 1.5rem;
     }
 
     @keyframes float {
-      0% {
-        transform: translateY(100vh) translateX(0);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-10vh) translateX(30px);
-        opacity: 0;
-      }
-    }
-
-    /* Confetti */
-    canvas.confetti {
-      position: fixed;
-      pointer-events: none;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1000;
-    }
-
-    /* End message */
-    #message {
-      text-align: center;
-      font-size: 1.8rem;
-      margin-top: 20px;
-      display: none;
+      0% { transform: translateY(100vh) scale(1); opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <h1>💕 Scratch & Match 💕</h1>
-  <div id="game"></div>
-  <div id="message">🎉 You Matched All Pairs! 🎉</div>
 
-  <canvas class="confetti" id="confettiCanvas"></canvas>
+  <div class="hearts" id="hearts-container"></div>
+
+  <!-- Lock screen -->
+  <div id="lockscreen">
+    <h1>🔐 Enter Passcode</h1>
+    <input type="password" id="passcode" placeholder="Type the secret passcode"/>
+    <button onclick="checkPass()">Enter</button>
+    <p id="wrong" style="color: pink; display: none;">Wrong passcode 💔</p>
+  </div>
+
+  <!-- Main content -->
+  <div id="main-content">
+    <h1 class="typewriter">Welcome My Love 💖</h1>
+    <p>Choose one of the surprises I made for you</p>
+    <nav id="nav-links">
+      <a href="scratchmatch.html">Scratch and Match</a>
+      <a href="swtlines.html">Romantic Sweet Lines</a>
+      <!-- ADD NEW LINKS HERE -->
+    </nav>
+  </div>
 
   <script>
-    const pairs = [
-      '❤️', '❤️',
-      'Kiss', 'Kiss',
-      '💋', '💋',
-      'Hug', 'Hug',
-      '😍', '😍',
-      'Love', 'Love',
-      '💖', '💖'
-    ];
+    const correctPass = "143"; // Change this
+    const storageKey = "romanticPassTime";
 
-    let firstCard = null;
-    let secondCard = null;
-    let lockBoard = false;
-    let matched = 0;
-
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
+    // Check if user has entered passcode recently
+    const lastAccess = localStorage.getItem(storageKey);
+    if (lastAccess && Date.now() - parseInt(lastAccess) < 30 * 60 * 1000) {
+      unlockPage();
     }
 
-    function createCard(content) {
-      const card = document.createElement('div');
-      card.classList.add('card');
-      card.innerHTML = `<span class="hidden-text">${content}</span>`;
-      card.addEventListener('click', () => revealCard(card, content));
-      return card;
-    }
-
-    function revealCard(card, content) {
-      if (lockBoard || card.classList.contains('revealed') || card.classList.contains('matched')) return;
-      card.classList.add('revealed');
-
-      if (!firstCard) {
-        firstCard = { card, content };
+    function checkPass() {
+      const input = document.getElementById("passcode").value;
+      if (input === correctPass) {
+        localStorage.setItem(storageKey, Date.now().toString());
+        unlockPage();
       } else {
-        secondCard = { card, content };
-        lockBoard = true;
-
-        setTimeout(() => {
-          if (firstCard.content === secondCard.content) {
-            firstCard.card.classList.add('matched');
-            secondCard.card.classList.add('matched');
-            matched += 2;
-
-            if (matched === pairs.length) {
-              document.getElementById('message').style.display = 'block';
-              startConfetti();
-            }
-          } else {
-            firstCard.card.classList.remove('revealed');
-            secondCard.card.classList.remove('revealed');
-          }
-
-          firstCard = null;
-          secondCard = null;
-          lockBoard = false;
-        }, 1000);
+        document.getElementById("wrong").style.display = "block";
       }
     }
 
-    function initGame() {
-      const gameBoard = document.getElementById('game');
-      gameBoard.innerHTML = '';
-      shuffle(pairs).forEach(content => {
-        gameBoard.appendChild(createCard(content));
-      });
+    function unlockPage() {
+      document.getElementById("lockscreen").style.display = "none";
+      document.getElementById("main-content").style.display = "block";
     }
 
     // Floating hearts
-    function spawnHearts() {
-      for (let i = 0; i < 20; i++) {
-        const heart = document.createElement('div');
-        heart.classList.add('heart');
-        heart.style.left = `${Math.random() * 100}vw`;
-        heart.style.animationDelay = `${Math.random() * 5}s`;
-        heart.innerHTML = '❤️';
-        document.body.appendChild(heart);
-      }
+    const heartContainer = document.getElementById('hearts-container');
+    for (let i = 0; i < 20; i++) {
+      const heart = document.createElement('span');
+      heart.innerHTML = '❤️';
+      heart.style.left = `${Math.random() * 100}vw`;
+      heart.style.animationDelay = `${Math.random() * 10}s`;
+      heartContainer.appendChild(heart);
     }
-
-    // Confetti
-    function startConfetti() {
-      const canvas = document.getElementById('confettiCanvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      const pieces = Array.from({ length: 150 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: 5 + Math.random() * 5,
-        dx: Math.random() * 2 - 1,
-        dy: Math.random() * 3 + 1,
-        color: `hsl(${Math.random() * 360}, 100%, 50%)`
-      }));
-
-      function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let p of pieces) {
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fill();
-          p.y += p.dy;
-          p.x += p.dx;
-          if (p.y > canvas.height) p.y = 0;
-          if (p.x > canvas.width) p.x = 0;
-        }
-        requestAnimationFrame(draw);
-      }
-
-      draw();
-    }
-
-    initGame();
-    spawnHearts();
   </script>
 </body>
 </html>
