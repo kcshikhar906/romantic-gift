@@ -44,8 +44,8 @@
     }
     .arrow {
       position: absolute;
-      top: 313px;
-      left: 56%;
+      top: 319px;
+      left: 54%;
       transform: translateX(-50%);
 	  rotate: 90deg;
       width: 0; 
@@ -169,8 +169,10 @@
       const degPerSegment = 360 / prompts.length;
       const stopAngle = 360 * 5 + (360 - (randomIndex * degPerSegment + degPerSegment / 2));
 
-      angle = stopAngle;
-      canvas.style.transform = `rotate(${angle}deg)`;
+      angle += stopAngle;
+	  canvas.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
+	  canvas.style.transform = `rotate(${angle}deg)`;
+
 
       setTimeout(() => {
         const popup = document.getElementById('popup');
