@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Love Fortune</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(to bottom right, #ffc0cb, #ffe4e1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') no-repeat center center;
+      background-size: cover;
+      animation: float 10s linear infinite;
+      opacity: 0.6;
+    }
+    @keyframes float {
+      0% {transform: translateY(100vh) translateX(0);}
+      100% {transform: translateY(-10vh) translateX(50px);}
+    }
+    .fortune-box {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      max-width: 90%;
+    }
+    .fortune-box h1 {
+      color: #e91e63;
+      margin-bottom: 20px;
+    }
+    .fortune-box p {
+      font-size: 20px;
+      color: #555;
+    }
+    .history {
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 16px;
+      color: #444;
+    }
+    .home-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      color: red;
+      border: none;
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button class="home-button" onclick="window.location.href='index.html'">Home</button>
+  <div class="fortune-box">
+    <h1>💖 Your Love Fortune 💖</h1>
+    <p id="fortune"></p>
+    <div class="history" id="history"></div>
+  </div>
+
+  <script>
+    const challenges = [
+      "Send a cute selfie 📸",
+      "Send a short love video 🎥",
+      "Write a poem about us ✍️",
+      "Share your favorite memory 💭",
+      "Send a morning voice message ☀️",
+      "Draw a picture of us 🎨",
+      "Say 3 things you love about me ❤️",
+      "Plan a date idea 📅",
+      "Send a screenshot of your favorite moment of us 🖼️",
+      "Send a sweet text randomly 💬",
+      "Recreate a romantic song for me 🎶",
+      "List 5 reasons why you love me 💘",
+      "Record a TikTok/lip-sync for me 🎤",
+      "Describe your dream vacation with me 🌴",
+      "Name a future plan we should work on together 💍"
+    ];
+
+    const fortuneEl = document.getElementById('fortune');
+    const historyEl = document.getElementById('history');
+    const savedFortune = localStorage.getItem('dailyFortune');
+    const savedDate = localStorage.getItem('fortuneDate');
+    const today = new Date().toDateString();
+    const historyList = JSON.parse(localStorage.getItem('fortuneHistory') || '[]');
+
+    if (savedFortune && savedDate === today) {
+      fortuneEl.textContent = savedFortune;
+    } else {
+      const newFortune = challenges[Math.floor(Math.random() * challenges.length)];
+      fortuneEl.textContent = newFortune;
+      localStorage.setItem('dailyFortune', newFortune);
+      localStorage.setItem('fortuneDate', today);
+      historyList.push(`${today}: ${newFortune}`);
+      localStorage.setItem('fortuneHistory', JSON.stringify(historyList));
+    }
+
+    if (historyList.length > 0) {
+      historyEl.innerHTML = '<strong>Past Fortunes:</strong><br>' + historyList.reverse().map(f => `• ${f}`).join('<br>');
+    }
+
+    for (let i = 0; i < 30; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      document.body.appendChild(heart);
+    }
+  </script>
+</body>
+</html>
