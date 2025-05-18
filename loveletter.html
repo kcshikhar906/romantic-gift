@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Daily Love Letter Generator 💌</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #ffeaf4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #d63384;
+      margin-bottom: 10px;
+    }
+
+    select {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #ff66a3;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ff3385;
+    }
+
+    .message-box {
+      background: #fff0f6;
+      border: 2px dashed #ff99c8;
+      padding: 20px;
+      margin-top: 20px;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 15px;
+      font-size: 18px;
+      color: #c2185b;
+      text-align: center;
+      min-height: 60px;
+      position: relative;
+    }
+
+    .hearts {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 24px;
+      animation: floatHearts 1.5s ease-in-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes floatHearts {
+      0% {
+        transform: translateY(20px) scale(1);
+        opacity: 0.2;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-60px) scale(1.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💌 Daily Love Letter Generator 💌</h1>
+
+  <div>
+    <select id="mood">
+      <option value="">Select Mood</option>
+      <option>Romantic</option>
+      <option>Missing You</option>
+      <option>Playful</option>
+      <option>Thankful</option>
+      <option>Sweet</option>
+    </select>
+
+    <select id="color">
+      <option value="">Select Color</option>
+      <option>Red</option>
+      <option>Blue</option>
+      <option>Pink</option>
+      <option>White</option>
+      <option>Black</option>
+    </select>
+
+    <select id="memory">
+      <option value="">Select a Memory</option>
+      <option>Our First Meet</option>
+      <option>That Rainy Walk</option>
+      <option>Midnight Calls</option>
+      <option>Anniversary</option>
+      <option>Your Smile</option>
+    </select>
+  </div>
+
+  <button onclick="generateLoveMessage()">Generate Love Message</button>
+
+  <div class="message-box" id="loveMessageBox">
+    <div class="hearts" id="heartsContainer"></div>
+  </div>
+
+  <script>
+    const messages = [
+      "तिमी बिना यो संसार अधुरो लाग्छ। ❤️",
+      "तिमी मेरो दिलको कविता हौ जसलाई म हरेक दिन पढ्न चाहन्छु।",
+      "तिमी मेरो जीवनको त्यो रंग हौ जुन बिना म कल्पना गर्न सक्दिन।",
+      "तिमीलाई सम्झिदा पनि अनुहारमा मुस्कान आइहाल्छ। 😍",
+      "तिमी जति मीठो शब्दमा लेख्न खोजे पनि अल्फाबेट नै पुग्दैन।",
+      "तिमी मेरो बिहानको घाम र रातको जून हौ। ☀️🌙",
+      "म तिमीमा यति हराएको छु कि आफूलाई नै बिर्सन थालेको छु।",
+      "तिमी बिना दिन त दिन जस्तो लाग्दैन।",
+      "म तिमीलाई हरेक सासमा महसुस गर्छु।",
+      "तिमी मेरो जीवनको त्यो पाना हौ जहाँ हरेक कथा प्रेमले भरिएको छ।",
+      "तिमी बिना हरेक गीत अधुरो लाग्छ।",
+      "तिमी सँगको सम्झनाले मेरो हृदय मुस्कुराउँछ।",
+      "हाम्रो प्रेम त जुन बाटो हिड्दा कहिल्यै थाकिन्न।",
+      "तिमी बिना मलाई मेरो मन नै खाली लाग्छ।",
+      "तिमी मेरो कारण, मेरो प्रेरणा, मेरो सधैंको माया हौ।",
+      "तिमी सँगको पल नै मेरो लागि संसार हो।",
+      "म तिमी सँग कहिल्यै बोर हुँदैन, किनकि तिमी नै मजा हौ।",
+      "तिमी मेरो जीवनको रमाइलो नाटक हौ जुन कहिल्यै सकिदैन।",
+      "तिमी मेरो भावना हौ जुन शब्दमा आउँदैन।",
+      "तिमी जस्तै अरू कोही हुनै सक्दैन। 💕"
+    ];
+
+    function generateLoveMessage() {
+      const mood = document.getElementById("mood").value;
+      const color = document.getElementById("color").value;
+      const memory = document.getElementById("memory").value;
+      const messageBox = document.getElementById("loveMessageBox");
+      const heartsContainer = document.getElementById("heartsContainer");
+
+      // Clear message
+      messageBox.innerText = '';
+      heartsContainer.innerHTML = '';
+
+      if (mood && color && memory) {
+        const randomIndex = Math.floor(Math.random() * messages.length);
+        const message = messages[randomIndex];
+
+        messageBox.innerText = message;
+
+        // Add heart animation
+        for (let i = 0; i < 15; i++) {
+          const heart = document.createElement("div");
+          heart.classList.add("heart");
+          heart.innerText = "❤️";
+          heart.style.left = Math.random() * 100 + "%";
+          heart.style.top = "80%";
+          heartsContainer.appendChild(heart);
+        }
+      }
+    }
+  </script>
+<a href="index.html" style="
+  position: fixed; top: 15px; left: 15px;
+  background-color: rgba(255,255,255,0.8);
+  color: #ff5f6d;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  z-index: 1000;
+">🏠 Home</a>
+</body>
+</html>
