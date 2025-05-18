@@ -11,7 +11,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
     }
 
@@ -30,17 +30,17 @@
 
     button {
       padding: 10px 20px;
-      font-size: 16px;
-      background-color: #ff66a3;
+      background-color: #ff69b4;
       color: white;
       border: none;
       border-radius: 12px;
-      margin-top: 10px;
+      font-size: 16px;
       cursor: pointer;
+      margin-top: 10px;
     }
 
     button:hover {
-      background-color: #ff3385;
+      background-color: #ff4095;
     }
 
     .message-box {
@@ -60,33 +60,32 @@
 
     .hearts {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .heart {
-      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
       font-size: 24px;
-      animation: floatHearts 1.5s ease-in-out forwards;
+      animation: floatHearts 1s ease forwards;
       opacity: 0;
     }
 
     @keyframes floatHearts {
       0% {
-        transform: translateY(20px) scale(1);
-        opacity: 0.2;
+        top: 0;
+        opacity: 0;
       }
       50% {
         opacity: 1;
       }
       100% {
-        transform: translateY(-60px) scale(1.5);
+        top: -30px;
         opacity: 0;
       }
+    }
+
+    .warning {
+      color: red;
+      margin-top: 10px;
+      font-size: 16px;
     }
   </style>
 </head>
@@ -123,11 +122,10 @@
     </select>
   </div>
 
-  <button onclick="generateLoveMessage()">Generate Love Message</button>
+  <button onclick="generateMessage()">Generate Message 💘</button>
+  <div class="warning" id="warningBox"></div>
 
-  <div class="message-box" id="loveMessageBox">
-    <div class="hearts" id="heartsContainer"></div>
-  </div>
+  <div class="message-box" id="loveMessage"></div>
 
   <script>
     const messages = [
@@ -153,33 +151,32 @@
       "तिमी जस्तै अरू कोही हुनै सक्दैन। 💕"
     ];
 
-    function generateLoveMessage() {
+    function generateMessage() {
       const mood = document.getElementById("mood").value;
       const color = document.getElementById("color").value;
       const memory = document.getElementById("memory").value;
-      const messageBox = document.getElementById("loveMessageBox");
-      const heartsContainer = document.getElementById("heartsContainer");
+      const warning = document.getElementById("warningBox");
+      const box = document.getElementById("loveMessage");
 
-      // Clear message
-      messageBox.innerText = '';
-      heartsContainer.innerHTML = '';
+      box.innerHTML = "";
+      warning.innerText = "";
 
-      if (mood && color && memory) {
-        const randomIndex = Math.floor(Math.random() * messages.length);
-        const message = messages[randomIndex];
-
-        messageBox.innerText = message;
-
-        // Add heart animation
-        for (let i = 0; i < 15; i++) {
-          const heart = document.createElement("div");
-          heart.classList.add("heart");
-          heart.innerText = "❤️";
-          heart.style.left = Math.random() * 100 + "%";
-          heart.style.top = "80%";
-          heartsContainer.appendChild(heart);
-        }
+      if (!mood || !color || !memory) {
+        warning.innerText = "Please select one option from each box!";
+        return;
       }
+
+      const msg = messages[Math.floor(Math.random() * messages.length)];
+      box.innerText = msg;
+
+      const heart = document.createElement("div");
+      heart.className = "hearts";
+      heart.innerText = "💖💞💕";
+      box.appendChild(heart);
+
+      setTimeout(() => {
+        heart.remove();
+      }, 1000);
     }
   </script>
 <a href="index.html" style="
