@@ -6,8 +6,8 @@
   <title>Welcome My Love 💕</title>
   <style>
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+      margin: 0; /* Remove default body margin */
+      font-family: 'Arial', sans-serif; /* Use a common and readable font */
       background: linear-gradient(to bottom right, #ff5f6d, #ffc371);
       color: white;
       text-align: center;
@@ -18,24 +18,41 @@
       flex-direction: column;
       justify-content: center;
       height: 100vh;
-      padding: 20px;
+      padding: 20px; /* Add some padding */
+ box-sizing: border-box; /* Include padding in element's total width and height */
     }
 
     #main-content {
-      display: none;
+      display: none; /* Initially hide main content */
+ opacity: 0; /* Start with zero opacity for fade-in effect */
+ transition: opacity 1s ease-in-out; /* Add a transition for the fade-in effect */
+ padding: 20px; /* Add padding to the main content */
+ box-sizing: border-box; /* Include padding in element's total width and height */
+ max-width: 800px; /* Limit the maximum width for better readability */
+ margin: 0 auto; /* Center the main content horizontally */
     }
 
     input[type="password"] {
       padding: 10px;
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
+ font-size: 1.1rem; /* Increase font size for better readability */
       margin-top: 10px;
+ text-align: center; /* Center text in the input field */
+ background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
+ color: #333; /* Darker text color for contrast */
+ outline: none; /* Remove default outline */
     }
 
     button {
       margin-top: 10px;
       padding: 10px 20px;
+ background-color: #fff; /* White background */
+ color: #ff5f6d; /* Romantic pink color */
+ border: none; /* Remove border */
+ border-radius: 25px; /* More rounded corners */
+ cursor: pointer;
+ transition: transform 0.3s ease, background-color 0.3s ease; /* Add transition for hover effects */
       font-size: 1rem;
       border: none;
       border-radius: 8px;
@@ -44,11 +61,17 @@
       cursor: pointer;
     }
 
+ button:hover {
+ transform: scale(1.05); /* Slightly enlarge button on hover */
+ background-color: #ffebee; /* Lighter pink on hover */
+    }
+
     nav {
       background-color: rgba(255, 255, 255, 0.1);
       display: flex;
       justify-content: center;
       gap: 20px;
+ flex-wrap: wrap; /* Allow navigation links to wrap on smaller screens */
       padding: 10px;
       flex-wrap: wrap;
     }
@@ -59,12 +82,13 @@
       font-weight: bold;
       padding: 8px 15px;
       border-radius: 20px;
-      background-color: rgba(255, 255, 255, 0.2);
-      transition: background-color 0.3s ease;
+ background-color: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
+ transition: background-color 0.3s ease, transform 0.3s ease; /* Add transition for hover effects */
     }
 
     nav a:hover {
-      background-color: rgba(255, 255, 255, 0.4);
+ background-color: rgba(255, 255, 255, 0.4); /* More transparent background on hover */
+ transform: translateY(-3px); /* Slightly move link up on hover */
     }
 
     h1.typewriter {
@@ -72,7 +96,7 @@
       margin-top: 30px;
       border-right: 2px solid #fff;
       white-space: nowrap;
-      overflow: hidden;
+ overflow: hidden; /* Hide overflow for typing effect */
       animation: typing 3s steps(40, end), blink 0.75s step-end infinite;
       width: 0;
     }
@@ -87,7 +111,7 @@
     }
 
     p {
-      font-size: 1.2rem;
+ font-size: 1.2rem; /* Set font size for paragraphs */
     }
 
     .hearts {
@@ -98,16 +122,25 @@
       z-index: -1;
     }
 
-    .hearts span {
-      position: absolute;
-      color: #fff;
-      animation: float 10s linear infinite;
-      font-size: 1.5rem;
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem; /* Reduce heading size on smaller screens */
+      }
+      nav {
+        flex-direction: column; /* Stack navigation links vertically on small screens */
+        gap: 10px; /* Reduce gap between stacked links */
+      }
+      nav a {
+        padding: 10px; /* Increase padding for easier tapping */
+      }
     }
 
-    @keyframes float {
-      0% { transform: translateY(100vh) scale(1); opacity: 1; }
-      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    .hearts span {
+      position: absolute;
+ color: #fff; /* White hearts */
+ animation: float 10s linear infinite; /* Float animation */
+ font-size: 1.5rem; /* Heart size */
     }
   </style>
 </head>
@@ -161,6 +194,7 @@
     function unlockPage() {
       document.getElementById("lockscreen").style.display = "none";
       document.getElementById("main-content").style.display = "block";
+ document.getElementById("main-content").style.opacity = 1; // Fade in the main content
     }
 
     // Floating hearts
