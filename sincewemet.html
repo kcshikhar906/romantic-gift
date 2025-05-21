@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Time Since We Met</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdf6f9;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .column {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      flex: 1;
+      min-width: 340px;
+    }
+
+    h2, h3 {
+      color: #d81b60;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    select, input {
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      background-color: #d81b60;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .result {
+      margin-top: 25px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .time-box {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .time-item {
+      background-color: #fce4ec;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 500;
+      color: #880e4f;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .time-item span {
+      display: block;
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Column -->
+  <div class="column">
+    <h2>Since 31-May-2024 at 7:22 PM (When i said Hi)</h2>
+    <div class="time-box" id="fixedResult"></div>
+  </div>
+
+  <!-- Right Column -->
+  <div class="column">
+    <h2>Your Memory Timer</h2>
+    <label for="event">Select Event</label>
+    <select id="event">
+      <option value="">--Choose an event--</option>
+      <option value="First Met">First Met</option>
+      <option value="First Kiss">First Kiss</option>
+      <option value="First Hug">First Hug</option>
+      <option value="Fell in Love">Fell in Love</option>
+      <option value="First Date">First Date</option>
+      <option value="Since First Hi">Since First Hi</option>
+    </select>
+
+    <label for="customDate">Date and Time</label>
+    <input type="datetime-local" id="customDate">
+
+    <button onclick="calculateCustom()">Show Time Passed</button>
+    <div class="error" id="customError"></div>
+
+    <div class="result" id="customResult"></div>
+  </div>
+
+  <script>
+    function formatDuration(ms) {
+      const seconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      const weeks = Math.floor(days / 7);
+      const months = Math.floor(days / 30.4375);
+      const years = Math.floor(months / 12);
+
+      return `
+        <div class="time-item">Years<span>${years}</span></div>
+        <div class="time-item">Months<span>${months}</span></div>
+        <div class="time-item">Weeks<span>${weeks}</span></div>
+        <div class="time-item">Days<span>${days}</span></div>
+        <div class="time-item">Hours<span>${hours}</span></div>
+        <div class="time-item">Minutes<span>${minutes}</span></div>
+        <div class="time-item">Seconds<span>${seconds}</span></div>
+      `;
+    }
+
+    function calculateFixed() {
+      const fixedDate = new Date("2024-05-31T19:22:00");
+      const now = new Date();
+      const diff = now - fixedDate;
+      document.getElementById("fixedResult").innerHTML = formatDuration(diff);
+    }
+
+    function calculateCustom() {
+      const event = document.getElementById("event").value;
+      const dateStr = document.getElementById("customDate").value;
+      const errorBox = document.getElementById("customError");
+      const resultBox = document.getElementById("customResult");
+
+      errorBox.textContent = '';
+      resultBox.innerHTML = '';
+
+      if (!event || !dateStr) {
+        errorBox.textContent = "Please select an event and date-time 💔";
+        return;
+      }
+
+      const selectedDate = new Date(dateStr);
+      const now = new Date();
+      const diff = now - selectedDate;
+
+      if (diff < 0) {
+        errorBox.textContent = "Selected date is in the future! 😅";
+        return;
+      }
+
+      resultBox.innerHTML = `
+        <h3>⏳ Time since "${event}":</h3>
+        <div class="time-box">${formatDuration(diff)}</div>
+      `;
+    }
+
+    calculateFixed();
+    setInterval(calculateFixed, 1000);
+  </script>
+  <a href="index.html" style="
+  position: fixed; top: 15px; left: 15px;
+  background-color: rgba(255,255,255,0.8);
+  color: #ff5f6d;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  z-index: 1000;
+">🏠 Home</a>
+</body>
+</html>
