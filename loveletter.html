@@ -179,6 +179,36 @@
       }, 1000);
     }
   </script>
+  <script>
+  const startTime = Date.now();
+
+  window.addEventListener("beforeunload", function () {
+    const endTime = Date.now();
+    const duration = Math.floor((endTime - startTime) / 1000);
+    const page = window.location.pathname;
+    const name = localStorage.getItem("visitorName") || "Anonymous";
+
+    fetch("https://script.google.com/macros/s/AKfycby91Zn8VrHRoQnL9KatKCv2bsTC5GPc0IfZ_I0RdVIKDEjtW0I3wygKHqMv6tPfr_0lfw/exec", {
+      method: "POST",
+      body: JSON.stringify({
+        name: name,
+        page: page,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+        duration: duration
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  });
+
+  // Optional: Add a prompt to collect visitor's name once
+  if (!localStorage.getItem("visitorName")) {
+    const ask = prompt("Enter your name (or leave blank):");
+    localStorage.setItem("visitorName", ask ? ask : "Anonymous");
+  }
+</script>
 <a href="index.html" style="
   position: fixed; top: 15px; left: 15px;
   background-color: rgba(255,255,255,0.8);
