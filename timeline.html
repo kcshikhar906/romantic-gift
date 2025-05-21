@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Love Timeline with Date Count</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff0f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #ff5e88;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 1.8rem;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    input, textarea, button {
+      padding: 0.7rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #ff5e88;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: #e14c76;
+    }
+
+    .timeline {
+      margin-top: 2rem;
+      border-left: 4px solid #ff5e88;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .event {
+      position: relative;
+      margin-bottom: 2rem;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .event::before {
+      content: '💖';
+      position: absolute;
+      left: -35px;
+      top: 0;
+      font-size: 1.5rem;
+    }
+
+    .event h3 {
+      margin: 0;
+      color: #ff2f70;
+    }
+
+    .event p {
+      margin: 0.3rem 0 0.2rem;
+      color: #333;
+    }
+
+    .event time {
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    .event .since {
+      font-size: 0.95rem;
+      color: #444;
+      font-style: italic;
+    }
+
+    .delete-btn {
+      background: transparent;
+      color: #888;
+      border: none;
+      cursor: pointer;
+      margin-top: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    .delete-btn:hover {
+      color: #ff2f70;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>💌 Our Love Timeline</header>
+
+  <div class="container">
+    <form id="eventForm">
+      <div class="form-group">
+        <label for="title">Event Title 💕</label>
+        <input type="text" id="title" required placeholder="e.g. First Kiss" />
+      </div>
+      <div class="form-group">
+        <label for="date">Event Date 📅</label>
+        <input type="date" id="date" required />
+      </div>
+      <div class="form-group">
+        <label for="description">Sweet Memory ✨</label>
+        <textarea id="description" rows="3" required placeholder="Write something cute..."></textarea>
+      </div>
+      <button type="submit">Add to Timeline</button>
+    </form>
+
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("eventForm");
+    const timeline = document.getElementById("timeline");
+
+    const loadEvents = () => {
+      const events = JSON.parse(localStorage.getItem("loveTimeline")) || [];
+      timeline.innerHTML = '';
+      events.forEach((event, index) => addEventToDOM(event, index));
+    };
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value.trim();
+      const date = document.getElementById("date").value;
+      const description = document.getElementById("description").value.trim();
+
+      if (!title || !date || !description) return;
+
+      const newEvent = { title, date, description };
+      const events = JSON.parse(localStorage.getItem("loveTimeline")) || [];
+      events.push(newEvent);
+      localStorage.setItem("loveTimeline", JSON.stringify(events));
+
+      form.reset();
+      loadEvents();
+    });
+
+    const addEventToDOM = (event, index) => {
+      const div = document.createElement("div");
+      div.className = "event";
+
+      const daysSince = calculateSince(new Date(event.date));
+
+      div.innerHTML = `
+        <h3>${event.title}</h3>
+        <time>${new Date(event.date).toDateString()}</time>
+        <p>${event.description}</p>
+        <div class="since">❤️ It's been ${daysSince} since this memory.</div>
+        <button class="delete-btn" onclick="deleteEvent(${index})">🗑️ Delete</button>
+      `;
+      timeline.appendChild(div);
+    };
+
+    const calculateSince = (pastDate) => {
+      const now = new Date();
+      const diff = Math.abs(now - pastDate);
+
+      const seconds = Math.floor(diff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      const weeks = Math.floor(days / 7);
+      const months = Math.floor(days / 30.44); // avg month
+      const years = Math.floor(days / 365.25); // leap years
+
+      return `${years} years, ${months % 12} months, ${days % 30} days`;
+    };
+
+    window.deleteEvent = (index) => {
+      const events = JSON.parse(localStorage.getItem("loveTimeline")) || [];
+      events.splice(index, 1);
+      localStorage.setItem("loveTimeline", JSON.stringify(events));
+      loadEvents();
+    };
+
+    loadEvents();
+  </script>
+  <a href="index.html" style="
+  position: fixed; top: 15px; left: 15px;
+  background-color: rgba(255,255,255,0.8);
+  color: #ff5f6d;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  z-index: 1000;
+">🏠 Home</a>
+</body>
+</html>
