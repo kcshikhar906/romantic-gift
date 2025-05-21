@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Love Calculator</title>
+  <style>
+    body {
+      background: #ffe6f0;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      color: #e91e63;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #ff4081;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    #error {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .progress-container {
+      width: 60%;
+      height: 25px;
+      border: 2px solid #e91e63;
+      border-radius: 20px;
+      margin: 40px auto;
+      overflow: hidden;
+      background: #fff;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff4b6e, #ff7f9e);
+      transition: width 0.1s;
+    }
+
+    #finalResult {
+      margin-top: 20px;
+      font-size: 22px;
+      color: #e91e63;
+      display: none;
+    }
+
+    #message {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💕 Love Calculator 💕</h1>
+  <input type="text" id="name1" placeholder="Your Name">
+  <input type="text" id="name2" placeholder="Their Name">
+  <br>
+  <button onclick="startCalculation()">Check Love %</button>
+
+  <div id="error"></div>
+
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div id="finalResult">
+    <div id="percentageText"></div>
+    <div id="message"></div>
+  </div>
+
+  <script>
+    const messages = {
+      high: [
+        "You two are made for each other! 💕",
+        "True love flows between you. Keep it strong! 💍",
+        "Your love is legendary! ❤️",
+        "Destined partners forever. 💘"
+      ],
+      medium: [
+        "Good chemistry! Keep growing your love. 🌱",
+        "You're halfway there. More hugs, more love! 🤗",
+        "Some magic exists… make it more special. ✨"
+      ],
+      low: [
+        "Love needs nurturing. Try understanding each other. 🌈",
+        "Talk more, grow closer. ❤️‍🩹",
+        "Start with friendship. Build from there. 🌸"
+      ]
+    };
+
+    function startCalculation() {
+      const name1 = document.getElementById('name1').value.trim();
+      const name2 = document.getElementById('name2').value.trim();
+      const errorDiv = document.getElementById('error');
+      const progressContainer = document.getElementById('progressContainer');
+      const progressBar = document.getElementById('progressBar');
+      const finalResult = document.getElementById('finalResult');
+      const percentageText = document.getElementById('percentageText');
+      const messageText = document.getElementById('message');
+
+      errorDiv.innerText = '';
+      finalResult.style.display = 'none';
+      progressBar.style.width = '0%';
+      progressContainer.style.display = 'none';
+
+      if (!name1 || !name2) {
+        errorDiv.innerText = "Please enter both names 💔";
+        return;
+      }
+
+      const lovePercent = Math.floor(Math.random() * 101);
+      let category = lovePercent >= 75 ? "high" : lovePercent >= 40 ? "medium" : "low";
+      const message = messages[category][Math.floor(Math.random() * messages[category].length)];
+
+      // Animate progress
+      let width = 0;
+      progressContainer.style.display = 'block';
+      const interval = setInterval(() => {
+        if (width >= lovePercent) {
+          clearInterval(interval);
+          percentageText.innerText = `❤️ Love Score: ${lovePercent}%`;
+          messageText.innerText = message;
+          finalResult.style.display = 'block';
+        } else {
+          width++;
+          progressBar.style.width = width + '%';
+        }
+      }, 30);
+    }
+  </script>
+<a href="index.html" style="
+  position: fixed; top: 15px; left: 15px;
+  background-color: rgba(255,255,255,0.8);
+  color: #ff5f6d;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  z-index: 1000;
+">🏠 Home</a>
+</body>
+</html>
