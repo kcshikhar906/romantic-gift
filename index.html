@@ -3,67 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Welcome Maichyang 💕</title>
+  <title>Welcome💕</title>
   <style>
     body {
-      margin: 0; /* Remove default body margin */
-      font-family: 'Arial', sans-serif; /* Use a common and readable font */
+      margin: 0;
+      font-family: 'Arial', sans-serif;
       background: linear-gradient(to bottom right, #ff5f6d, #ffc371);
       color: white;
       text-align: center;
     }
 
-    #lockscreen {
+    #lockscreen, #name-dialog {
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center;
       height: 100vh;
-      padding: 20px; /* Add some padding */
- box-sizing: border-box; /* Include padding in element's total width and height */
+      padding: 20px;
     }
 
     #main-content {
-      display: none; /* Initially hide main content */
- opacity: 0; /* Start with zero opacity for fade-in effect */
- transition: opacity 1s ease-in-out; /* Add a transition for the fade-in effect */
- padding: 20px; /* Add padding to the main content */
- box-sizing: border-box; /* Include padding in element's total width and height */
- max-width: 800px; /* Limit the maximum width for better readability */
- margin: 0 auto; /* Center the main content horizontally */
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
-    input[type="password"] {
+    input[type="password"], input[type="text"] {
       padding: 10px;
       border: none;
       border-radius: 8px;
- font-size: 1.1rem; /* Increase font size for better readability */
+      font-size: 1.1rem;
       margin-top: 10px;
- text-align: center; /* Center text in the input field */
- background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
- color: #333; /* Darker text color for contrast */
- outline: none; /* Remove default outline */
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #333;
+      outline: none;
     }
 
     button {
       margin-top: 10px;
       padding: 10px 20px;
- background-color: #fff; /* White background */
- color: #ff5f6d; /* Romantic pink color */
- border: none; /* Remove border */
- border-radius: 25px; /* More rounded corners */
- cursor: pointer;
- transition: transform 0.3s ease, background-color 0.3s ease; /* Add transition for hover effects */
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      background-color: #ffffff;
+      background-color: #fff;
       color: #ff5f6d;
+      border: none;
+      border-radius: 25px;
       cursor: pointer;
+      font-size: 1rem;
+      transition: transform 0.3s ease, background-color 0.3s ease;
     }
 
- button:hover {
- transform: scale(1.05); /* Slightly enlarge button on hover */
- background-color: #ffebee; /* Lighter pink on hover */
+    button:hover {
+      transform: scale(1.05);
+      background-color: #ffebee;
     }
 
     nav {
@@ -71,9 +65,8 @@
       display: flex;
       justify-content: center;
       gap: 20px;
- flex-wrap: wrap; /* Allow navigation links to wrap on smaller screens */
-      padding: 10px;
       flex-wrap: wrap;
+      padding: 10px;
     }
 
     nav a {
@@ -82,36 +75,30 @@
       font-weight: bold;
       padding: 8px 15px;
       border-radius: 20px;
- background-color: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
- transition: background-color 0.3s ease, transform 0.3s ease; /* Add transition for hover effects */
+      background-color: rgba(255, 255, 255, 0.2);
+      transition: background-color 0.3s ease, transform 0.3s ease;
     }
 
     nav a:hover {
- background-color: rgba(255, 255, 255, 0.4); /* More transparent background on hover */
- transform: translateY(-3px); /* Slightly move link up on hover */
+      background-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-3px);
     }
 
     h1.typewriter {
-  font-size: 2.5rem;
-  margin-top: 30px;
-  text-align: center;
-  color: #fff;
-  animation: fadeLoop 6s ease-in-out infinite;
-  opacity: 0;
-}
+      font-size: 2.5rem;
+      margin-top: 30px;
+      text-align: center;
+      color: #fff;
+      animation: fadeLoop 6s ease-in-out infinite;
+      opacity: 0;
+    }
 
-/* Fade In and Out Loop */
-@keyframes fadeLoop {
-  0%   { opacity: 0; transform: translateY(10px); }
-  10%  { opacity: 1; transform: translateY(0); }
-  40%  { opacity: 1; }
-  60%  { opacity: 0; transform: translateY(-10px); }
-  100% { opacity: 0; transform: translateY(-10px); }
-}
-
-
-    p {
- font-size: 1.2rem; /* Set font size for paragraphs */
+    @keyframes fadeLoop {
+      0% { opacity: 0; transform: translateY(10px); }
+      10% { opacity: 1; transform: translateY(0); }
+      40% { opacity: 1; }
+      60% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 0; transform: translateY(-10px); }
     }
 
     .hearts {
@@ -122,102 +109,137 @@
       z-index: -1;
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 2rem; /* Reduce heading size on smaller screens */
-      }
-      nav {
-        flex-direction: column; /* Stack navigation links vertically on small screens */
-        gap: 10px; /* Reduce gap between stacked links */
-      }
-      nav a {
-        padding: 10px; /* Increase padding for easier tapping */
-      }
-    }
-
     .hearts span {
       position: absolute;
- color: #fff; /* White hearts */
- animation: float 10s linear infinite; /* Float animation */
- font-size: 1.5rem; /* Heart size */
+      color: #fff;
+      animation: float 10s linear infinite;
+      font-size: 1.5rem;
+    }
+
+    #user-name-display {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 10px;
+      color: white;
+      text-shadow: 2px 2px 5px #ff5f6d;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      nav { flex-direction: column; gap: 10px; }
+      nav a { padding: 10px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="hearts" id="hearts-container"></div>
+<div class="hearts" id="hearts-container"></div>
 
-  <!-- Lock screen -->
-  <div id="lockscreen">
-    <h1>🔐 Enter Passcode</h1>
-    <input type="password" id="passcode" placeholder="Type the secret passcode"/>
-    <button onclick="checkPass()">Enter</button>
-    <p id="wrong" style="color: pink; display: none;">Wrong passcode 💔</p>
-  </div>
+<!-- Lock screen -->
+<div id="lockscreen">
+  <h1>🔐 Enter Passcode</h1>
+  <input type="password" id="passcode" placeholder="Type the secret passcode"/>
+  <button onclick="checkPass()">Enter</button>
+  <p id="wrong" style="color: pink; display: none;">Wrong passcode 💔</p>
+</div>
 
-  <!-- Main content -->
-  <div id="main-content">
-    <h1 class="typewriter">Welcome Maichyang (NEPI) 💖</h1>
-    <p>Choose one of the surprises I made for you</p>
-    <nav id="nav-links">
-      <a href="scratchmatch.html">Scratch and Match</a>
-      <a href="swtlines.html">Romantic Sweet Lines</a>
-	    <a href="spin.html">Spin the Wheel</a>
-	    <a href="dedicatedsong.html">Song Dedication</a>
-      <a href="challenge.html">Challenges</a>
-      <a href="loveletter.html">Love Letter</a>
-      <a href="lovecalcu.html">Love Calculator</a>
-      <a href="sincewemet.html">Duration Calculator</a>
-      <a href="timeline.html">Timelinee</a>
-      <!-- ADD NEW LINKS HERE -->
-    </nav>
-  </div>
+<!-- Name Input Dialog -->
+<div id="name-dialog" style="display:none;">
+  <h1>🌸 What's your name?</h1>
+  <input type="text" id="visitor-name" placeholder="Type your name here 💕"/>
+  <button onclick="submitName()">Submit</button>
+  <p id="name-error" style="color: pink; display: none;">Please enter your name 💖</p>
+</div>
 
-  <script>
-    const correctPass = "143"; // Change this
-    const storageKey = "romanticPassTime";
+<!-- Main content -->
+<div id="main-content">
+  <h1 class="typewriter">Welcome💖</h1>
+  <p id="user-name-display"></p>
+  <p>Choose one of the surprises I made for you</p>
+  <nav>
+    <a href="scratchmatch.html">Scratch & Match</a>
+    <a href="swtlines.html">Romantic Sweet Lines</a>
+    <a href="spin.html">Spin the Wheel</a>
+    <a href="dedicatedsong.html">Song Dedication</a>
+    <a href="challenge.html">Challenges</a>
+    <a href="loveletter.html">Love Letter</a>
+    <a href="lovecalcu.html">Love Calculator</a>
+    <a href="sincewemet.html">Duration Calculator</a>
+    <a href="timeline.html">Timeline</a>
+    
+  </nav>
+</div>
 
-    // Check if user has entered passcode recently
-    const lastAccess = localStorage.getItem(storageKey);
-    if (lastAccess && Date.now() - parseInt(lastAccess) < 30 * 60 * 1000) {
-      unlockPage();
-    }
+<script>
+  const correctPass = "143";
+  const storageKey = "romanticPassTime";
+  const nameKey = "visitorName";
 
-    function checkPass() {
-      const input = document.getElementById("passcode").value;
-      if (input === correctPass) {
-        localStorage.setItem(storageKey, Date.now().toString());
-        unlockPage();
-      } else {
-        document.getElementById("wrong").style.display = "block";
-      }
-    }
+  const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSe0yWWspzY980bQrK-1zjEfWzpDERYGgxaS04YJn1jRQlpslg/formResponse"; // CHANGE TO YOUR FORM URL
+  const nameEntryId = "entry.1899395688"; // CHANGE TO YOUR entry.id for name
 
-    function unlockPage() {
+  const lastAccess = localStorage.getItem(storageKey);
+  const savedName = localStorage.getItem(nameKey);
+
+  if (lastAccess && Date.now() - parseInt(lastAccess) < 30 * 60 * 1000 && savedName) {
+    showMainContent(savedName);
+  }
+
+  function checkPass() {
+    const input = document.getElementById("passcode").value;
+    if (input === correctPass) {
       document.getElementById("lockscreen").style.display = "none";
-      document.getElementById("main-content").style.display = "block";
- document.getElementById("main-content").style.opacity = 1; // Fade in the main content
+      document.getElementById("name-dialog").style.display = "flex";
+    } else {
+      document.getElementById("wrong").style.display = "block";
     }
+  }
 
-    // Floating hearts
-    const heartContainer = document.getElementById('hearts-container');
-    for (let i = 0; i < 20; i++) {
-      const heart = document.createElement('span');
-      heart.innerHTML = '❤️';
-      heart.style.left = `${Math.random() * 100}vw`;
-      heart.style.animationDelay = `${Math.random() * 10}s`;
-      heartContainer.appendChild(heart);
+  function submitName() {
+    const name = document.getElementById("visitor-name").value.trim();
+    if (!name) {
+      document.getElementById("name-error").style.display = "block";
+      return;
     }
-  </script>
-  <script>
+    localStorage.setItem(nameKey, name);
+    localStorage.setItem(storageKey, Date.now().toString());
+
+    // Send to Google Form
+    fetch(formURL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `${nameEntryId}=${encodeURIComponent(name)}`
+    });
+
+    showMainContent(name);
+  }
+
+  function showMainContent(name) {
+    document.getElementById("lockscreen").style.display = "none";
+    document.getElementById("name-dialog").style.display = "none";
+    document.getElementById("main-content").style.display = "block";
+    document.getElementById("main-content").style.opacity = 1;
+    document.getElementById("user-name-display").textContent = `Hello, ${name} 💕`;
+  }
+
+  // Floating hearts
+  const heartContainer = document.getElementById('hearts-container');
+  for (let i = 0; i < 20; i++) {
+    const heart = document.createElement('span');
+    heart.innerHTML = '❤️';
+    heart.style.left = `${Math.random() * 100}vw`;
+    heart.style.animationDelay = `${Math.random() * 10}s`;
+    heartContainer.appendChild(heart);
+  }
+
+  // Time tracking
   const startTime = Date.now();
-
   window.addEventListener("beforeunload", function () {
     const endTime = Date.now();
     const duration = Math.floor((endTime - startTime) / 1000);
     const page = window.location.pathname;
-    const name = localStorage.getItem("visitorName") || "Anonymous";
+    const name = localStorage.getItem(nameKey) || "Anonymous";
 
     fetch("https://script.google.com/macros/s/AKfycby91Zn8VrHRoQnL9KatKCv2bsTC5GPc0IfZ_I0RdVIKDEjtW0I3wygKHqMv6tPfr_0lfw/exec", {
       method: "POST",
@@ -233,13 +255,6 @@
       },
     });
   });
-
-  // Optional: Add a prompt to collect visitor's name once
-  if (!localStorage.getItem("visitorName")) {
-    const ask = prompt("Enter your name (or leave blank):");
-    localStorage.setItem("visitorName", ask ? ask : "Anonymous");
-  }
 </script>
-
 </body>
 </html>
