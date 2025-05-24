@@ -129,11 +129,42 @@
       nav { flex-direction: column; gap: 10px; }
       nav a { padding: 10px; }
     }
+    #floating-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .floating-text {
+    position: absolute;
+    font-size: 1.2rem;
+    color: rgba(255, 192, 203, 0.8);
+    animation: floatUp 10s linear infinite;
+    white-space: nowrap;
+    font-family: cursive;
+  }
+
+  @keyframes floatUp {
+    0% {
+      transform: translateY(100vh) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-10vh) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+
   </style>
 </head>
 <body>
-
-<div class="hearts" id="hearts-container"></div>
+<div id="floating-background"></div>
 
 <!-- Lock screen -->
 <div id="lockscreen">
@@ -222,40 +253,44 @@
     document.getElementById("main-content").style.display = "block";
     document.getElementById("main-content").style.opacity = 1;
     document.getElementById("user-name-display").textContent = `Hello, ${name} 💕`;
+    startFloatingText(userName);
+
+  }
+  function startFloatingText(name) {
+  const container = document.getElementById('floating-background');
+  const sweetLines = [
+    `You're my sunshine 🌞`,
+    `Love you forever 💖`,
+    `Together always 🫶`,
+    `You make my heart smile 😊`,
+    `Forever yours ❤️`,
+    `My soulmate 💑`,
+    `${name}, you're perfect 💘`,
+    `You're my dream come true ✨`,
+    `${name}, I adore you 💕`,
+    `With you, everything's better 💫`
+  ];
+
+  function createFloatingText() {
+    const el = document.createElement('div');
+    el.className = 'floating-text';
+    el.textContent = sweetLines[Math.floor(Math.random() * sweetLines.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.top = '100vh';
+    el.style.fontSize = (Math.random() * 1.5 + 0.8) + 'rem';
+    container.appendChild(el);
+
+    setTimeout(() => {
+      el.remove();
+    }, 10000); // matches animation duration
   }
 
-  // Floating hearts
-  const heartContainer = document.getElementById('hearts-container');
-  for (let i = 0; i < 20; i++) {
-    const heart = document.createElement('span');
-    heart.innerHTML = '❤️';
-    heart.style.left = `${Math.random() * 100}vw`;
-    heart.style.animationDelay = `${Math.random() * 10}s`;
-    heartContainer.appendChild(heart);
-  }
+  // Create floating text every 1.5 seconds
+  setInterval(createFloatingText, 1500);
+}
 
-  // Time tracking
-  const startTime = Date.now();
-  window.addEventListener("beforeunload", function () {
-    const endTime = Date.now();
-    const duration = Math.floor((endTime - startTime) / 1000);
-    const page = window.location.pathname;
-    const name = localStorage.getItem(nameKey) || "Anonymous";
 
-    fetch("https://script.google.com/macros/s/AKfycby91Zn8VrHRoQnL9KatKCv2bsTC5GPc0IfZ_I0RdVIKDEjtW0I3wygKHqMv6tPfr_0lfw/exec", {
-      method: "POST",
-      body: JSON.stringify({
-        name: name,
-        page: page,
-        date: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString(),
-        duration: duration
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+  
 </script>
 </body>
 </html>
