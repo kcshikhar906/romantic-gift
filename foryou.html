@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Romantic Page 💌</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #ff9a9e, #fad0c4);
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 50px;
+      color: white;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    form {
+      background-color: rgba(255,255,255,0.2);
+      padding: 20px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+    input, textarea {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 10px;
+      border: none;
+      width: 250px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #fff;
+      color: #ff4e50;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #popup {
+      margin-top: 30px;
+      font-size: 1.3em;
+      color: #fff7f0;
+      animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    
+  #floatingContainer {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 9999;
+  }
+
+  .floatingText {
+    position: absolute;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff3366;
+    animation: floatUp 5s linear forwards;
+    white-space: nowrap;
+  }
+
+  @keyframes floatUp {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-150px) scale(1.3);
+    }
+  }
+
+  </style>
+</head>
+<body>
+<button class="home-button" onclick="window.location.href='index.html'">🏠Home</button>
+  <h1>Hey You! 💕</h1>
+  <p>Enter your name and send a sweet message</p>
+
+  <form id="romanceForm">
+  <label>Your Name *</label><br>
+  <input type="text" name="name" required placeholder="Enter your name 💘"><br><br>
+
+  <label>Sweet Message (optional)</label><br>
+  <textarea name="message" placeholder="Say something sweet... 😍"></textarea><br><br>
+
+  <button type="submit">Send Love 💌</button>
+</form>
+<div id="floatingContainer"></div>
+
+
+  <div id="popup"></div>
+
+  <script>
+  const form = document.getElementById('romanceForm');
+  const popup = document.getElementById('popup');
+  const floatingContainer = document.getElementById('floatingContainer');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name = form.elements['name'].value.trim();
+    const message = form.elements['message'].value.trim();
+
+    if (!name) return; // Prevent submission if name is empty
+
+    // Sweet pop-up
+    popup.innerHTML = `Aww ${name}, you're the sweetest! 💘<br>${message ? `"${message}"` : ''}`;
+
+    // ❤️ Create floating elements
+    const sweetLines = [
+      `💖 ${name}, you're adorable!`,
+      `❤️ ${name}, stay amazing!`,
+      `💘 ${name} 💘`,
+      `💕 Love from ${name}!`,
+      `🌹 You're lovely, ${name}!`
+    ];
+
+    for (let i = 0; i < 20; i++) {
+      const float = document.createElement('div');
+      float.className = 'floatingText';
+      float.style.left = Math.random() * 100 + '%';
+      float.style.top = (Math.random() * 80 + 10) + '%';
+      float.textContent = sweetLines[Math.floor(Math.random() * sweetLines.length)];
+      floatingContainer.appendChild(float);
+
+      // Remove after animation ends
+      setTimeout(() => float.remove(), 5000);
+    }
+
+    // Send to Google Form
+    const formData = new FormData();
+    formData.append("entry.1899395688", name);
+    if (message) formData.append("entry.869886151", message);
+
+    fetch("https://docs.google.com/forms/d/e/1FAIpQLSe0yWWspzY980bQrK-1zjEfWzpDERYGgxaS04YJn1jRQlpslg/formResponse", {
+      method: "POST",
+      mode: "no-cors",
+      body: formData
+    });
+
+    form.reset();
+  });
+</script>
+
+
+</body>
+</html>
