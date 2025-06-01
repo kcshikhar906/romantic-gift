@@ -214,7 +214,7 @@
   const lastAccess = localStorage.getItem(storageKey);
   const savedName = localStorage.getItem(nameKey);
 
-  if (lastAccess && Date.now() - parseInt(lastAccess) < 5 * 60 * 1000 && savedName) {
+  if (lastAccess && Date.now() - parseInt(lastAccess) < 30 * 60 * 1000 && savedName) {
     showMainContent(savedName);
   }
 
