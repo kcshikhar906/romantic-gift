@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Love's Choice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+</head>
+<body style="margin: 0; font-family: 'Parisienne', cursive; background: linear-gradient(to bottom, #1c2526, #3a4a4b); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; overflow: hidden; touch-action: manipulation;">
+    <div style="text-align: center; padding: 10px; width: 100%; max-width: 400px;">
+        <h1 style="font-size: 8vw; color: #ffcad4; text-shadow: 0 0 8px rgba(255, 202, 212, 0.8); animation: fadeIn 2s ease-in; margin: 5px 0;">Love's Choice</h1>
+        <p id="question" style="font-size: 5vw; color: #ddd; margin: 10px 0;">Will you be my forever?</p>
+        <div style="display: flex; justify-content: center; gap: 10px; margin: 20px 0; position: relative;">
+            <button id="yesButton" style="padding: 12px 24px; font-size: 5vw; background: #ff6f61; color: white; border: none; border-radius: 20px; cursor: pointer; transition: transform 0.2s, background 0.3s; touch-action: manipulation;">Yes</button>
+            <button id="noButton" style="padding: 12px 24px; font-size: 5vw; background: #ff9a8b; color: white; border: none; border-radius: 20px; cursor: pointer; transition: transform 0.2s; position: absolute; touch-action: manipulation;">No</button>
+        </div>
+        <div id="message" style="font-size: 4.5vw; color: #ddd; margin: 10px 0; min-height: 10vw; text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); text-align: center;"></div>
+        <img id="heartAnimation" src="https://media.giphy.com/media/26BRzozg4TCVUL4Ji/giphy.gif" style="display: none; width: 30vw; max-width: 120px; margin: 10px auto;">
+        <button id="restartButton" style="padding: 8px 16px; font-size: 4vw; background: #ff6f61; color: white; border: none; border-radius: 20px; cursor: pointer; transition: transform 0.2s, background 0.3s; display: none; touch-action: manipulation;">Ask Again</button>
+    </div>
+    <footer style="position: fixed; bottom: 5px; color: #ddd; font-size: 3vw;">© 2025 Love's Choice | Crafted with 🌙💖</footer>
+
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes glow {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.5); }
+            100% { filter: brightness(1); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes tapFeedback {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        button:active {
+            animation: tapFeedback 0.2s ease-in-out;
+        }
+    </style>
+
+    <script>
+        const yesButton = document.getElementById('yesButton');
+        const noButton = document.getElementById('noButton');
+        const messageElement = document.getElementById('message');
+        const heartAnimation = document.getElementById('heartAnimation');
+        const restartButton = document.getElementById('restartButton');
+        const questionElement = document.getElementById('question');
+
+        // Romantic messages
+        const loveMessages = [
+            "You are my heart's eternal home. 💖",
+            "Every moment with you is a treasure. ✨",
+            "My love for you shines brighter than the stars. 🌟",
+            "You make my world complete. 🥰",
+            "Forever is just the start with you. 💞"
+        ];
+
+        // Questions
+        const questions = [
+            "Will you be my forever?",
+            "Is your heart mine to keep?",
+            "Will you dance with me under the stars?",
+            "Can we write our love story together?",
+            "Will you hold my heart always?"
+        ];
+
+        // Move "No" button
+        function moveNoButton() {
+            console.log('Moving No button');
+            const container = noButton.parentElement;
+            const maxX = container.clientWidth - noButton.offsetWidth;
+            const maxY = container.clientHeight - noButton.offsetHeight;
+            const newX = Math.random() * maxX;
+            const newY = Math.random() * maxY;
+            noButton.style.position = 'absolute';
+            noButton.style.transform = `translate(${newX}px, ${newY}px)`;
+        }
+
+        // Handle "No" button interaction
+        function handleNoInteraction(e) {
+            e.preventDefault();
+            console.log('No button interaction');
+            moveNoButton();
+            alert("Oh, come on! You know you want to say Yes! 😘");
+        }
+
+        // Handle "Yes" button interaction
+        function handleYesInteraction(e) {
+            e.preventDefault();
+            console.log('Yes button clicked');
+            const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+            messageElement.textContent = randomMessage;
+            messageElement.style.animation = 'glow 1s ease-in-out';
+            heartAnimation.style.display = 'block';
+            heartAnimation.style.animation = 'pulse 1s ease-in-out infinite';
+            yesButton.style.display = 'none';
+            noButton.style.display = 'none';
+            restartButton.style.display = 'block';
+            setTimeout(() => { messageElement.style.animation = ''; }, 1000);
+        }
+
+        // Restart game
+        function handleRestartInteraction(e) {
+            e.preventDefault();
+            console.log('Restart button clicked');
+            messageElement.textContent = '';
+            heartAnimation.style.display = 'none';
+            heartAnimation.style.animation = '';
+            yesButton.style.display = 'inline-block';
+            noButton.style.display = 'inline-block';
+            noButton.style.transform = 'translate(0, 0)';
+            restartButton.style.display = 'none';
+            questionElement.textContent = questions[Math.floor(Math.random() * questions.length)];
+        }
+
+        // Add event listeners for touch and mouse
+        if (yesButton) {
+            yesButton.addEventListener('touchstart', handleYesInteraction);
+            yesButton.addEventListener('click', handleYesInteraction);
+        } else {
+            console.error('Yes button not found');
+        }
+
+        if (noButton) {
+            noButton.addEventListener('touchstart', handleNoInteraction);
+            noButton.addEventListener('mouseover', moveNoButton);
+            noButton.addEventListener('click', handleNoInteraction);
+        } else {
+            console.error('No button not found');
+        }
+
+        if (restartButton) {
+            restartButton.addEventListener('touchstart', handleRestartInteraction);
+            restartButton.addEventListener('click', handleRestartInteraction);
+        } else {
+            console.error('Restart button not found');
+        }
+
+        // Initial console log to confirm script execution
+        console.log('Love\'s Choice script loaded');
+    </script>
+</body>
+</html>
