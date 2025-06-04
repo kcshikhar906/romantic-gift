@@ -15,7 +15,7 @@
             <button id="noButton" style="padding: 12px 24px; font-size: 5vw; background: #ff9a8b; color: white; border: none; border-radius: 20px; cursor: pointer; transition: transform 0.2s; position: absolute; touch-action: manipulation;">No</button>
         </div>
         <div id="message" style="font-size: 4.5vw; color: #ddd; margin: 10px 0; min-height: 10vw; text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); text-align: center;"></div>
-        <img id="heartAnimation" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcm1zczQ2ZG93MHMxcXk3endvYmd6NTluM3NzMjdjNDM0enZyM2pkdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/D4hiJ8Oo1xOwUDOzyJ/giphy.gif" style="display: none; width: 30vw; max-width: 120px; margin: 10px auto;">
+        <img id="heartAnimation" src="" style="display: none; width: 30vw; max-width: 120px; margin: 10px auto;">
         <button id="restartButton" style="padding: 8px 16px; font-size: 4vw; background: #ff6f61; color: white; border: none; border-radius: 20px; cursor: pointer; transition: transform 0.2s, background 0.3s; display: none; touch-action: manipulation;">Ask Again</button>
     </div>
     <footer style="position: fixed; bottom: 5px; color: #ddd; font-size: 3vw;">© 2025 Love's Choice | Crafted with 🌙💖</footer>
@@ -62,6 +62,15 @@
             "Forever is just the start with you. 💞"
         ];
 
+        // Heart GIFs from GIPHY (add more links here)
+        const heartGifs = [
+            "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcm1zczQ2ZG93MHMxcXk3endvYmd6NTluM3NzMjdjNDM0enZyM2pkdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/D4hiJ8Oo1xOwUDOzyJ/giphy.gif",
+            "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmNlaGZ0bzIwM3pkMjU3YzNsY2xvdjE1dng5dHY4ZmpwM3A4cGdhdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/v4JbTGe4KJjKo/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnptbzJ2OHZ0YjBqYmFoYXBrcXVsaXRxbDU5azQxbzkzMnFqbDFhZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/fvjBHSTYMcE1fKcrP9/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnptbzJ2OHZ0YjBqYmFoYXBrcXVsaXRxbDU5azQxbzkzMnFqbDFhZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/26FLdmIp6wJr91JAI/giphy.gif",
+            "https://media.giphy.com/media/gHzk34CV2tNZeh6Q2m/giphy.gif?cid=ecf05e47mksf9x0qhtp9b9b09luit4ibl7jrzxfs9cmilinw&ep=v1_gifs_search&rid=giphy.gif&ct=g"
+        ];
+
         // Questions
         const questions = [
             "Will you be my forever?",
@@ -96,8 +105,11 @@
             e.preventDefault();
             console.log('Yes button clicked');
             const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+            const randomGif = heartGifs[Math.floor(Math.random() * heartGifs.length)];
+            console.log('Selected GIF:', randomGif);
             messageElement.textContent = randomMessage;
             messageElement.style.animation = 'glow 1s ease-in-out';
+            heartAnimation.src = randomGif;
             heartAnimation.style.display = 'block';
             heartAnimation.style.animation = 'pulse 1s ease-in-out infinite';
             yesButton.style.display = 'none';
@@ -111,6 +123,7 @@
             e.preventDefault();
             console.log('Restart button clicked');
             messageElement.textContent = '';
+            heartAnimation.src = '';
             heartAnimation.style.display = 'none';
             heartAnimation.style.animation = '';
             yesButton.style.display = 'inline-block';
