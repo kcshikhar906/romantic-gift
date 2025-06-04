@@ -209,13 +209,11 @@
             if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
                 const lastCell = selectedCells[selectedCells.length - 1];
                 if (lastCell[0] !== row || lastCell[1] !== col) {
-                    const dRow = row - lastCell[0];
-                    const dCol = col - lastCell[1];
-                    if (Math.abs(dRow) <= 1 && Math.abs(dCol) <= 1 && selectedCells.length < 10) {
-                        if (selectedCells.length === 1 || isAligned(selectedCells, row, col)) {
-                            selectedCells.push([row, col]);
-                            checkWord();
-                        }
+                    const dRow = Math.abs(row - lastCell[0]);
+                    const dCol = Math.abs(col - lastCell[1]);
+                    if (dRow <= 1 && dCol <= 1 && selectedCells.length < 10) {
+                        selectedCells.push([row, col]);
+                        checkWord();
                     }
                 }
             }
@@ -225,35 +223,37 @@
             touchStart = null;
         });
 
-        // Check if new cell aligns with current selection direction
-        function isAligned(cells, newRow, newCol) {
+        // Check if selected cells form a straight line
+        function isStraightLine(cells) {
             if (cells.length < 2) return true;
-            const first = cells[0];
-            const last = cells[cells.length - 1];
-            const dRow = last[0] - first[0];
-            const dCol = last[1] - first[1];
-            const newDR = newRow - first[0];
-            const newDC = newCol - first[1];
-            const len = Math.max(Math.abs(dRow), Math.abs(dCol));
-            if (len === 0) return true;
-            const normDR = dRow / len;
-            const normDC = dCol / len;
-            const newLen = Math.max(Math.abs(newDR), Math.abs(newDC));
-            if (newLen === 0) return false;
-            const newNormDR = newDR / newLen;
-            const newNormDC = newDC / newLen;
-            return Math.abs(newNormDR - normDR) < 0.1 && Math.abs(newNormDC - normDC) < 0.1;
+            const [startRow, startCol] = cells[0];
+            const [endRow, endCol] = cells[cells.length - 1];
+            const dRow = endRow - startRow;
+            const dCol = endCol - startCol;
+            const steps = Math.max(Math.abs(dRow), Math.abs(dCol));
+            if (steps === 0) return cells.length === 1;
+            const stepRow = dRow / steps;
+            const stepCol = dCol / steps;
+            for (let i = 0; i < cells.length; i++) {
+                const expectedRow = Math.round(startRow + i * stepRow);
+                const expectedCol = Math.round(startCol + i * stepCol);
+                if (cells[i][0] !== expectedRow || cells[i][1] !== expectedCol) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         // Check selected word
         function checkWord() {
+            if (!isStraightLine(selectedCells)) return;
             const word = selectedCells.map(([r, c]) => grid[r][c]).join('');
             const reversedWord = selectedCells.slice().reverse().map(([r, c]) => grid[r][c]).join('');
             if (words.includes(word) && !foundWords.has(word)) {
                 foundWords.add(word);
                 document.getElementById(`word-${word}`).classList.add('found');
                 const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
-                const randomGif = heartGifs[Math.floor(Math.random() * loveMessages.length)];
+                const randomGif = heartGifs[Math.floor(Math.random() * heartGifs.length)];
                 console.log('Selected GIF:', randomGif);
                 unlockedVows.push(randomMessage);
                 messageElement.textContent = randomMessage;
@@ -272,7 +272,7 @@
                 foundWords.add(reversedWord);
                 document.getElementById(`word-${reversedWord}`).classList.add('found');
                 const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
-                const randomGif = heartGifs[Math.floor(Math.random() * loveMessages.length)];
+                const randomGif = heartGifs[Math.floor(Math.random() * heartGifs.length)];
                 console.log('Selected GIF:', randomGif);
                 unlockedVows.push(randomMessage);
                 messageElement.textContent = randomMessage;
