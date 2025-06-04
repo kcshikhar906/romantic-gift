@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Heartfire Chase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+</head>
+<body style="margin: 0; font-family: 'Parisienne', cursive; background: linear-gradient(to bottom, #2b0a1a, #4a1a2b); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; overflow: hidden; touch-action: none;">
+    <div style="text-align: center; padding: 10px; width: 100%; max-width: 400px;">
+        <h1 style="font-size: 8vw; color: #ff6f61; text-shadow: 0 0 8px rgba(255, 111, 97, 0.8); animation: fadeIn 2s ease-in; margin: 5px 0;">Heartfire Chase</h1>
+        <p style="font-size: 4vw; color: #ddd; margin: 5px 0;">Swipe to guide two hearts through the flames, collect Yes tokens, avoid the No heart!</p>
+        <canvas id="gameCanvas" style="border: 2px solid #ff6f61; border-radius: 10px; background: radial-gradient(circle, rgba(80, 20, 40, 0.3), transparent); display: block; margin: 10px auto; width: 90vw; height: 150vw; max-width: 400px; max-height: 667px;"></canvas>
+        <div style="font-size: 5vw; color: #ff6f61; margin: 5px 0;">
+            Score: <span id="score">0</span> | Vows: <span id="vowCount">0/5</span>
+        </div>
+        <div id="message" style="font-size: 4vw; color: #ddd; margin: 5px 0; min-height: 8vw; text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); text-align: center;"></div>
+        <img id="heartAnimation" src="" style="display: none; width: 30vw; max-width: 120px; margin: 10px auto;">
+        <div style="display: flex; justify-content: center; gap: 10px;">
+            <button id="pauseButton" style="padding: 8px 16px; font-size: 4vw; background: #ff9a8b; color: white; border: none; border-radius: 20px; cursor: pointer; transition: transform 0.2s, background 0.3s; touch-action: manipulation;">Pause</button>
+            <button id="journalButton" style="padding: 8px 16px; font-size: 4vw; background: #ff9a8b; color: white; border: none; border-radius: 20px; cursor: pointer; transition: transform 0.2s, background 0.3s; touch-action: manipulation;">Love Journal</button>
+        </div>
+    </div>
+    <footer style="position: fixed; bottom: 5px; color: #ddd; font-size: 3vw;">© 2025 Heartfire Chase | Crafted with 🔥💖</footer>
+
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes glow {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.5); }
+            100% { filter: brightness(1); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes tapFeedback {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        button:active {
+            animation: tapFeedback 0.2s ease-in-out;
+        }
+    </style>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const vowCountElement = document.getElementById('vowCount');
+        const messageElement = document.getElementById('message');
+        const heartAnimation = document.getElementById('heartAnimation');
+        const pauseButton = document.getElementById('pauseButton');
+        const journalButton = document.getElementById('journalButton');
+
+        // Set canvas size
+        canvas.width = Math.min(400, window.innerWidth * 0.9);
+        canvas.height = canvas.width * 5 / 3;
+
+        // Game variables
+        let hearts = [
+            { x: canvas.width * 0.4, y: canvas.height - 50 },
+            { x: canvas.width * 0.6, y: canvas.height - 50 }
+        ];
+        let obstacles = [];
+        let yesTokens = [];
+        let noHeart = { x: canvas.width / 2, y: -50, speed: 3, size: 20 };
+        let score = 0;
+        let vowCount = 0;
+        let gameSpeed = 3;
+        let gameOver = false;
+        let paused = false;
+        let lastTime = 0;
+        let touchX = null;
+
+        // Romantic messages
+        const loveMessages = [
+            "Our love burns brighter than any flame. 💖",
+            "You are my heart's endless fire. ✨",
+            "Together, we conquer all shadows. 🌟",
+            "My soul races for you alone. 🥰",
+            "Our bond is an eternal blaze. 💞"
+        ];
+
+        // Heart GIFs from GIPHY (add more links here)
+        const heartGifs = [
+            "https://media.giphy.com/media/26BRzozg4TCVUL4Ji/giphy.gif",
+            "https://media.giphy.com/media/l0Iudo6M0i3Zlygta/giphy.gif",
+            "https://media.giphy.com/media/3o6ozBLX9NusJ5O8Yo/giphy.gif"
+        ];
+
+        // Touch controls
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (gameOver) return;
+            touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+            console.log('Touch started at x:', touchX);
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (gameOver || paused) return;
+            touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+        });
+        canvas.addEventListener('touchend', () => {
+            touchX = null;
+        });
+
+        // Pause button
+        pauseButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            paused = !paused;
+            pauseButton.textContent = paused ? 'Resume' : 'Pause';
+            console.log('Pause toggled:', paused);
+            if (!paused && !gameOver) requestAnimationFrame(gameLoop);
+        });
+        pauseButton.addEventListener('click', () => {
+            paused = !paused;
+            pauseButton.textContent = paused ? 'Resume' : 'Pause';
+            console.log('Pause toggled:', paused);
+            if (!paused && !gameOver) requestAnimationFrame(gameLoop);
+        });
+
+        // Journal button
+        journalButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            console.log('Journal button clicked');
+            if (unlockedVows.length === 0) {
+                alert("No vows unlocked yet! Collect more Yes tokens to reveal our love story.");
+            } else {
+                alert("Love Journal:\n" + unlockedVows.join("\n"));
+            }
+        });
+        journalButton.addEventListener('click', () => {
+            console.log('Journal button clicked');
+            if (unlockedVows.length === 0) {
+                alert("No vows unlocked yet! Collect more Yes tokens to reveal our love story.");
+            } else {
+                alert("Love Journal:\n" + unlockedVows.join("\n"));
+            }
+        });
+
+        // Game objects
+        let unlockedVows = [];
+        function spawnObstacle() {
+            obstacles.push({
+                x: Math.random() * (canvas.width - 30),
+                y: -30,
+                width: 30 + Math.random() * 50,
+                height: 20,
+                speed: gameSpeed + Math.random()
+            });
+        }
+        function spawnYesToken() {
+            yesTokens.push({
+                x: Math.random() * (canvas.width - 20),
+                y: -20,
+                size: 15,
+                speed: gameSpeed
+            });
+        }
+
+        // Draw background particles
+        function drawParticles() {
+            ctx.fillStyle = 'rgba(255, 111, 97, 0.3)';
+            for (let i = 0; i < 50; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Game loop
+        function gameLoop(timestamp) {
+            if (gameOver || paused) return;
+
+            let deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+
+            // Update hearts position
+            if (touchX !== null) {
+                let targetX = touchX - (hearts[1].x - hearts[0].x) / 2;
+                hearts[0].x = Math.max(0, Math.min(canvas.width - (hearts[1].x - hearts[0].x), targetX));
+                hearts[1].x = hearts[0].x + (hearts[1].x - hearts[0].x);
+            }
+
+            // Update obstacles
+            obstacles.forEach((obs, index) => {
+                obs.y += obs.speed;
+                if (obs.y > canvas.height) obstacles.splice(index, 1);
+                hearts.forEach(heart => {
+                    if (
+                        heart.x < obs.x + obs.width &&
+                        heart.x + 20 > obs.x &&
+                        heart.y < obs.y + obs.height &&
+                        heart.y + 20 > obs.y
+                    ) {
+                        endGame();
+                    }
+                });
+            });
+
+            // Update Yes tokens
+            yesTokens.forEach((token, index) => {
+                token.y += token.speed;
+                if (token.y > canvas.height) yesTokens.splice(index, 1);
+                hearts.forEach(heart => {
+                    if (Math.hypot(heart.x + 10 - token.x, heart.y + 10 - token.y) < token.size + 10) {
+                        score += 5;
+                        scoreElement.textContent = score;
+                        yesTokens.splice(index, 1);
+                        if (score % 50 === 0) {
+                            vowCount++;
+                            const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+                            const randomGif = heartGifs[Math.floor(Math.random() * heartGifs.length)];
+                            console.log('Selected GIF:', randomGif);
+                            unlockedVows.push(randomMessage);
+                            messageElement.textContent = randomMessage;
+                            messageElement.style.animation = 'glow 1s ease-in-out';
+                            heartAnimation.src = randomGif;
+                            heartAnimation.style.display = 'block';
+                            heartAnimation.style.animation = 'pulse 1s ease-in-out infinite';
+                            paused = true;
+                            pauseButton.textContent = 'Resume';
+                            setTimeout(() => {
+                                messageElement.style.animation = '';
+                                heartAnimation.style.display = 'none';
+                                heartAnimation.style.animation = '';
+                                paused = false;
+                                pauseButton.textContent = 'Pause';
+                                requestAnimationFrame(gameLoop);
+                            }, 3000);
+                            vowCountElement.textContent = `${vowCount}/5`;
+                            gameSpeed += 0.5;
+                        }
+                    }
+                });
+            });
+
+            // Update No heart
+            noHeart.y += noHeart.speed;
+            if (noHeart.y > canvas.height) {
+                noHeart.y = -50;
+                noHeart.x = Math.random() * (canvas.width - noHeart.size);
+            }
+            noHeart.x += Math.sin(timestamp / 500) * 2; // Wavy movement
+            hearts.forEach(heart => {
+                if (Math.hypot(heart.x + 10 - noHeart.x, heart.y + 10 - noHeart.y) < noHeart.size + 10) {
+                    messageElement.textContent = "The No heart taunts: 'Choose Yes!' 😘";
+                    setTimeout(() => { if (!paused) messageElement.textContent = ''; }, 2000);
+                    noHeart.y = -50;
+                    noHeart.x = Math.random() * (canvas.width - noHeart.size);
+                }
+            });
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw background
+            drawParticles();
+
+            // Draw hearts
+            hearts.forEach(heart => {
+                ctx.fillStyle = '#ff6f61';
+                ctx.beginPath();
+                ctx.arc(heart.x + 10, heart.y + 10, 10, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw obstacles
+            obstacles.forEach(obs => {
+                ctx.fillStyle = 'rgba(100, 50, 70, 0.7)';
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+            });
+
+            // Draw Yes tokens
+            yesTokens.forEach(token => {
+                ctx.fillStyle = '#ffcad4';
+                ctx.beginPath();
+                ctx.arc(token.x, token.y, token.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw No heart
+            ctx.fillStyle = '#ff9a8b';
+            ctx.beginPath();
+            ctx.arc(noHeart.x, noHeart.y, noHeart.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = '3vw Parisienne';
+            ctx.textAlign = 'center';
+            ctx.fillText('No', noHeart.x, noHeart.y + 5);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // End game
+        function endGame() {
+            gameOver = true;
+            messageElement.textContent = `Love Faded! Score: ${score}`;
+            heartAnimation.src = '';
+            heartAnimation.style.display = 'none';
+            pauseButton.style.display = 'none';
+            journalButton.textContent = 'Restart';
+            journalButton.onclick = () => {
+                score = 0;
+                vowCount = 0;
+                obstacles = [];
+                yesTokens = [];
+                noHeart = { x: canvas.width / 2, y: -50, speed: 3, size: 20 };
+                gameSpeed = 3;
+                gameOver = false;
+                paused = false;
+                hearts = [
+                    { x: canvas.width * 0.4, y: canvas.height - 50 },
+                    { x: canvas.width * 0.6, y: canvas.height - 50 }
+                ];
+                scoreElement.textContent = '0';
+                vowCountElement.textContent = '0/5';
+                messageElement.textContent = '';
+                pauseButton.style.display = 'inline-block';
+                journalButton.textContent = 'Love Journal';
+                journalButton.onclick = null;
+                spawnObstacle();
+                spawnYesToken();
+                requestAnimationFrame(gameLoop);
+            };
+        }
+
+        // Spawn obstacles and tokens
+        setInterval(() => { if (!gameOver && !paused) spawnObstacle(); }, 1500);
+        setInterval(() => { if (!gameOver && !paused) spawnYesToken(); }, 1000);
+
+        // Start game
+        spawnObstacle();
+        spawnYesToken();
+        requestAnimationFrame(gameLoop);
+
+        // Initial console log
+        console.log('Heartfire Chase script loaded');
+    </script>
+</body>
+</html>
