@@ -7,7 +7,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Lora&display=swap" rel="stylesheet">
 </head>
 <body style="margin: 0; font-family: 'Lora', serif; background: linear-gradient(to bottom, #1a0b2e, #3b1a5e); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; overflow: hidden; touch-action: none;">
-    <div style="text-align: center; padding: 10px; width: 100%; max-width: 400px;">
+    <div id="startScreen" style="text-align: center; padding: 10px; width: 100%; max-width: 400px;">
+        <h1 style="font-size: 8vw; color: #ff6f91; text-shadow: 0 0 8px rgba(255, 111, 145, 0.8); animation: fadeIn 2s ease-in; margin: 5px 0;">Love's Hidden Words</h1>
+        <p style="font-size: 4vw; color: #ddd; margin: 10px 0;">Choose how many words to find:</p>
+        <select id="wordCount" style="padding: 8px; font-size: 4vw; background: #ff9ab1; color: white; border: none; border-radius: 10px; margin: 10px; font-family: 'Lora', serif;">
+            <option value="3">3 Words</option>
+            <option value="4">4 Words</option>
+            <option value="5">5 Words</option>
+            <option value="6">6 Words</option>
+            <option value="7">7 Words</option>
+            <option value="8">8 Words</option>
+            <option value="9">9 Words</option>
+            <option value="10">10 Words</option>
+        </select>
+        <button id="startButton" style="padding: 8px 16px; font-size: 4vw; background: #ff6f91; color: white; border: none; border-radius: 20px; cursor: pointer; transition: transform 0.2s, background 0.3s; touch-action: manipulation; font-family: 'Lora', serif;">Start Game</button>
+    </div>
+    <div id="gameScreen" style="text-align: center; padding: 10px; width: 100%; max-width: 400px; display: none;">
         <h1 style="font-size: 8vw; color: #ff6f91; text-shadow: 0 0 8px rgba(255, 111, 145, 0.8); animation: fadeIn 2s ease-in; margin: 5px 0;">Love's Hidden Words</h1>
         <p style="font-size: 4vw; color: #ddd; margin: 5px 0;">Tap and drag to find love words in the grid!</p>
         <div id="wordList" style="font-size: 4vw; color: #ffcad4; margin: 10px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; font-family: 'Lora', serif;"></div>
@@ -41,7 +56,7 @@
             50% { transform: scale(0.95); }
             100% { transform: scale(1); }
         }
-        button:active {
+        button:active, select:active {
             animation: tapFeedback 0.2s ease-in-out;
         }
         .found {
@@ -51,6 +66,10 @@
     </style>
 
     <script>
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const startButton = document.getElementById('startButton');
+        const wordCountSelect = document.getElementById('wordCount');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const wordListElement = document.getElementById('wordList');
@@ -64,10 +83,11 @@
         canvas.height = canvas.width;
 
         // Game variables
-        const gridSize = 10;
-        const cellSize = canvas.width / gridSize;
+        let gridSize = 10;
+        let cellSize = canvas.width / gridSize;
         let grid = [];
-        let words = ['HEART', 'LOVE', 'SOUL', 'KISS', 'VOW'];
+        let words = [];
+        const wordPool = ['HEART', 'LOVE', 'SOUL', 'KISS', 'VOW', 'DREAM', 'HOPE', 'STAR', 'MOON', 'FATE', 'BOND', 'GLOW', 'WISH', 'TRUE', 'SPARK'];
         let placedWords = [];
         let selectedCells = [];
         let gameOver = false;
@@ -91,6 +111,25 @@
             "https://media.giphy.com/media/l0Iudo6M0i3Zlygta/giphy.gif",
             "https://media.giphy.com/media/3o6ozBLX9NusJ5O8Yo/giphy.gif"
         ];
+
+        // Start game
+        startButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startGame();
+        });
+        startButton.addEventListener('click', startGame);
+        function startGame() {
+            const numWords = parseInt(wordCountSelect.value);
+            gridSize = numWords <= 4 ? 8 : numWords <= 6 ? 10 : numWords <= 8 ? 12 : 14;
+            cellSize = canvas.width / gridSize;
+            words = wordPool.sort(() => Math.random() - 0.5).slice(0, numWords);
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            initGrid();
+            displayWordList();
+            draw();
+            console.log('Game started with', numWords, 'words and', gridSize, 'x', gridSize, 'grid');
+        }
 
         // Initialize grid
         function initGrid() {
@@ -173,7 +212,6 @@
                     const dRow = row - lastCell[0];
                     const dCol = col - lastCell[1];
                     if (Math.abs(dRow) <= 1 && Math.abs(dCol) <= 1 && selectedCells.length < 10) {
-                        // Check if the new cell aligns with the current direction
                         if (selectedCells.length === 1 || isAligned(selectedCells, row, col)) {
                             selectedCells.push([row, col]);
                             checkWord();
@@ -196,7 +234,6 @@
             const dCol = last[1] - first[1];
             const newDR = newRow - first[0];
             const newDC = newCol - first[1];
-            // Normalize direction
             const len = Math.max(Math.abs(dRow), Math.abs(dCol));
             if (len === 0) return true;
             const normDR = dRow / len;
@@ -205,7 +242,6 @@
             if (newLen === 0) return false;
             const newNormDR = newDR / newLen;
             const newNormDC = newDC / newLen;
-            // Check if directions are approximately the same
             return Math.abs(newNormDR - normDR) < 0.1 && Math.abs(newNormDC - normDC) < 0.1;
         }
 
@@ -217,7 +253,7 @@
                 foundWords.add(word);
                 document.getElementById(`word-${word}`).classList.add('found');
                 const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
-                const randomGif = heartGifs[Math.floor(Math.random() * heartGifs.length)];
+                const randomGif = heartGifs[Math.floor(Math.random() * loveMessages.length)];
                 console.log('Selected GIF:', randomGif);
                 unlockedVows.push(randomMessage);
                 messageElement.textContent = randomMessage;
@@ -236,7 +272,7 @@
                 foundWords.add(reversedWord);
                 document.getElementById(`word-${reversedWord}`).classList.add('found');
                 const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
-                const randomGif = heartGifs[Math.floor(Math.random() * heartGifs.length)];
+                const randomGif = heartGifs[Math.floor(Math.random() * loveMessages.length)];
                 console.log('Selected GIF:', randomGif);
                 unlockedVows.push(randomMessage);
                 messageElement.textContent = randomMessage;
@@ -299,6 +335,7 @@
                 unlockedVows = [];
                 gameOver = false;
                 paused = false;
+                words = [];
                 messageElement.textContent = '';
                 heartAnimation.src = '';
                 heartAnimation.style.display = 'none';
@@ -306,9 +343,8 @@
                 pauseButton.style.display = 'inline-block';
                 journalButton.textContent = 'Vow Journal';
                 journalButton.onclick = showJournal;
-                initGrid();
-                displayWordList();
-                draw();
+                startScreen.style.display = 'block';
+                gameScreen.style.display = 'none';
             };
         }
 
@@ -367,11 +403,6 @@
 
             if (!gameOver && !paused) requestAnimationFrame(draw);
         }
-
-        // Initialize and start game
-        initGrid();
-        displayWordList();
-        draw();
 
         // Initial console log
         console.log('Love\'s Hidden Words script loaded');
